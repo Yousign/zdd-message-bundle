@@ -1,0 +1,16 @@
+framework:
+  secret: ThisIsSecret
+  test: true
+
+parameters:
+  custom_path_file: '%kernel.project_dir%/tmp/serialized_messages_directory'
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig: ~
+
+zdd_message:
+    serialized_messages_dir: '%custom_path_file%'
