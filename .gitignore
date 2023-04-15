@@ -1,0 +1,10 @@
+composer.lock
+
+.php-cs-fixer.cache
+.phpunit.result.cache
+
+var/
+vendor/
+
+/tests/Fixtures/App/tmp/serialized_messages_directory/
+!/tests/Fixtures/App/tmp/serialized_messages_directory/.gitkeep
