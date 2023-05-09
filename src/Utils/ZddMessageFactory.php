@@ -10,11 +10,11 @@ use Yousign\ZddMessageBundle\ZddMessageConfigInterface;
 
 final class ZddMessageFactory
 {
-    private ZddParameterExtractor $parameterExtractor;
+    private ZddPropertyExtractor $propertyExtractor;
 
     public function __construct(private readonly ZddMessageConfigInterface $config)
     {
-        $this->parameterExtractor = new ZddParameterExtractor($this->config);
+        $this->propertyExtractor = new ZddPropertyExtractor($this->config);
     }
 
     /**
@@ -22,14 +22,14 @@ final class ZddMessageFactory
      */
     public function create(string $className): ZddMessage
     {
-        $params = $this->parameterExtractor->extractParametersFromClass($className);
+        $propertyList = $this->propertyExtractor->extractPropertiesFromClass($className);
 
         $message = (new \ReflectionClass($className))->newInstanceWithoutConstructor();
-        foreach ($params->getParameters() as $property => $value) {
+        foreach ($propertyList->getProperties() as $property => $value) {
             $this->forcePropertyValue($message, $property, $value);
         }
 
-        return new ZddMessage($className, serialize($message), $params->getNotNullableProperties());
+        return new ZddMessage($className, serialize($message), $propertyList->getNotNullableProperties());
     }
 
     private function forcePropertyValue(object $object, string $property, mixed $value): void

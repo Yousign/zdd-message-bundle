@@ -5,7 +5,7 @@ namespace Yousign\ZddMessageBundle\Utils;
 use Yousign\ZddMessageBundle\Exceptions\InvalidTypeException;
 use Yousign\ZddMessageBundle\ZddMessageConfigInterface;
 
-class ZddParameterExtractor
+final class ZddPropertyExtractor
 {
     private const SCALAR_VALUES = [
         'string' => 'Hello World!',
@@ -21,39 +21,42 @@ class ZddParameterExtractor
 
     /**
      * @param class-string $className
+     *
+     * @throws InvalidTypeException
+     * @throws \ReflectionException
      */
-    public function extractParametersFromClass(string $className): ParameterList
+    public function extractPropertiesFromClass(string $className): PropertyList
     {
         $reflectionClass = new \ReflectionClass($className);
 
-        $expectedProperties = $reflectionClass->getProperties();
-        $params = new ParameterList();
+        $propertyList = new PropertyList();
 
-        foreach ($expectedProperties as $expectedProperty) {
-            $propertyName = $expectedProperty->getName();
-            $propertyType = $expectedProperty->getType();
+        foreach ($reflectionClass->getProperties() as $property) {
+            $propertyName = $property->getName();
+            $propertyType = $property->getType();
 
             if (null === $propertyType) {
                 throw InvalidTypeException::typeMissing($propertyName, $className);
             }
 
             if ($propertyType->allowsNull()) {
-                $params->add($propertyName);
+                $propertyList->addNullableProperty($propertyName);
 
                 continue;
             }
+
             if (!$propertyType instanceof \ReflectionNamedType) {
                 throw InvalidTypeException::typeNotSupported();
             }
 
             $typeHint = $propertyType->getName();
-            $params->add($propertyName, $this->doGetValue($typeHint), $typeHint);
+            $propertyList->addProperty($propertyName, $typeHint, $this->generateFakeValueFromType($typeHint));
         }
 
-        return $params;
+        return $propertyList;
     }
 
-    private function doGetValue(string $typeHint): mixed
+    private function generateFakeValueFromType(string $typeHint): mixed
     {
         if (array_key_exists($typeHint, self::SCALAR_VALUES)) {
             return self::SCALAR_VALUES[$typeHint];
