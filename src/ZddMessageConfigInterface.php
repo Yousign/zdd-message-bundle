@@ -20,37 +20,36 @@ interface ZddMessageConfigInterface
     public function getMessageToAssert(): array;
 
     /**
-     * The value that should be set to each Message parameter.
+     * Provide a fake value for each custom property type used in your messages.
+     * You can also override the fake value used for scalar types.
      *
      * @example
-     * Suppose you have messages 2 messages like this:
+     * Suppose you have message which contains an object as property type:
+     *
      * class MyMessage
      * {
-     *   private string $content;
-     *   private int $number;
-     *   private array $data
-     *   private MyOtherMessage $otherMessage;
+     *     private MyObject $object;
+     *     // ...
      * }
      *
-     * class MyOtherMessage
+     * class MyObject
      * {
-     *   private float $total;
+     *     private string $content;
+     *     // ...
      * }
      *
-     * The getValue should be like this:
+     * The implementation of getCustomValueForPropertyType should be like this:
      *
-     * getValue(string $typeHint): array
-     *   {
-     *     return match($typeHint) [
-     *       'string' => 'Up to you',
-     *        'int' => 42,
-     *        'float' => 4.2,
-     *        'array' => ['PHP', 'For The Win'],
-     *        'App\Message\MyOtherMessage' => new MyOtherMessage(['PHP', 'For The Win']),
+     * public function getCustomValueForPropertyType(): array;
+     * {
+     *    return [
+     *        'Namespace\MyObject' => new MyObject("Hi!"),
      *    ];
-     *   }
+     * }
      *
      * @see MessageConfig in ZddMessageFakerTest.php for a concret examples
+     *
+     * @return array<string, mixed>
      */
-    public function getValue(string $typeHint): mixed;
+    public function getCustomValueForPropertyType(): array;
 }

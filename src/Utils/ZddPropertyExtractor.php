@@ -3,6 +3,7 @@
 namespace Yousign\ZddMessageBundle\Utils;
 
 use Yousign\ZddMessageBundle\Exceptions\InvalidTypeException;
+use Yousign\ZddMessageBundle\Exceptions\MissingValueForTypeException;
 use Yousign\ZddMessageBundle\ZddMessageConfigInterface;
 
 final class ZddPropertyExtractor
@@ -23,6 +24,7 @@ final class ZddPropertyExtractor
      * @param class-string $className
      *
      * @throws InvalidTypeException
+     * @throws MissingValueForTypeException
      * @throws \ReflectionException
      */
     public function extractPropertiesFromClass(string $className): PropertyList
@@ -56,12 +58,16 @@ final class ZddPropertyExtractor
         return $propertyList;
     }
 
+    /**
+     * @throws MissingValueForTypeException
+     */
     private function generateFakeValueFromType(string $typeHint): mixed
     {
-        if (array_key_exists($typeHint, self::SCALAR_VALUES)) {
-            return self::SCALAR_VALUES[$typeHint];
+        $values = $this->config->getCustomValueForPropertyType() + self::SCALAR_VALUES;
+        if (array_key_exists($typeHint, $values)) {
+            return $values[$typeHint];
         }
 
-        return $this->config->getValue($typeHint);
+        throw MissingValueForTypeException::missingValue($typeHint, $this->config);
     }
 }

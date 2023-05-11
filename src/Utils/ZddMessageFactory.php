@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yousign\ZddMessageBundle\Utils;
 
-use Yousign\ZddMessageBundle\Exceptions\MissingValueForTypeException;
 use Yousign\ZddMessageBundle\ZddMessage;
 use Yousign\ZddMessageBundle\ZddMessageConfigInterface;
 
@@ -38,10 +37,6 @@ final class ZddMessageFactory
         $reflectionProperty = $reflectionClass->getProperty($property);
 
         $reflectionProperty->setAccessible(true);
-        try {
-            $reflectionProperty->setValue($object, $value);
-        } catch (\TypeError $e) {
-            throw MissingValueForTypeException::missingValue($property, $this->config, $e->getCode(), $e);
-        }
+        $reflectionProperty->setValue($object, $value);
     }
 }

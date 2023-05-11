@@ -24,14 +24,13 @@ class MessageConfig implements ZddMessageConfigInterface
         ];
     }
 
-    public function getValue(string $typeHint): mixed
+    public function getCustomValueForPropertyType(): array
     {
-        return match ($typeHint) {
+        return [
             Locale::class => new Locale('fr'),
             'Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status' => Status::DRAFT,
             DummyMessageWithNullableNumberProperty::class => new DummyMessageWithNullableNumberProperty('content'),
-            default => null,
-        };
+        ];
     }
 
     public static function reset(): void

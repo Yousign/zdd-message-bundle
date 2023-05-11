@@ -61,7 +61,7 @@ class ZddMessageFakerTest extends TestCase
         $factory = new ZddMessageFactory(new WithoutValueConfig());
 
         $this->expectException(MissingValueForTypeException::class);
-        $this->expectExceptionMessage('Missing value for property type "dummyMessage" maybe you forgot to add it in "App\WithoutValue\WithoutValueConfig"');
+        $this->expectExceptionMessage('Missing value for property type "Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage" maybe you forgot to add it in "App\WithoutValue\WithoutValueConfig"');
         $factory->create(WithoutValue::class);
     }
 }
@@ -87,7 +87,7 @@ final class WithoutValueConfig implements ZddMessageConfigInterface
         ];
     }
 
-    public function getValue(string $typeHint): mixed
+    public function getCustomValueForPropertyType(): array
     {
         return [];
     }
