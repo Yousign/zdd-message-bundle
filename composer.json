@@ -1,8 +1,9 @@
 {
-    "type": "project",
+    "type": "library",
     "name": "yousign/zdd-message-bundle",
-    "description": "Assert Zero downtime deployment compliance for messages",
+    "description": "Assert Zero Downtime Deployment compliance for messages",
     "license": "MIT",
+    "keywords": ["dev", "zdd"],
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
