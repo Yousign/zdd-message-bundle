@@ -72,9 +72,9 @@ Then, you should register it in the configuration (`config/packages/yousign.yaml
 The bundle comes with commands to assert that your messages are compliant with the Zero Downtime Deployment:
 
 ```bash
-$ bin/console yousign:zdd-message serialize # Serialize the messages in files
-$ bin/console yousign:zdd-message validate # Assert that the messages are compliant by deserializing them from files and call the properties.
-$ bin/console yousign:zdd-message:debug # Output all tracked messages
+$ bin/console yousign:zdd-message:generate # Generate serialized messages in files.
+$ bin/console yousign:zdd-message:validate # Assert that the messages are compliant by deserializing them from files and call the properties.
+$ bin/console yousign:zdd-message:debug # Output all tracked messages.
 ```
 
 💡 You should run `bin/console yousign:zdd-message serialize` with the production version code and `bin/console yousign:zdd-message validate` with the version code you want to merge.
@@ -82,9 +82,9 @@ $ bin/console yousign:zdd-message:debug # Output all tracked messages
 #### Example from the version you want to merge:
 ```bash
 $ git checkout [production_version]
-$ bin/console yousign:zdd-message serialize
+$ bin/console yousign:zdd-message:generate
 $ git checkout - # Go back to the version you want to merge
-$ bin/console yousign:zdd-message validate
+$ bin/console yousign:zdd-message:validate
 ```
 
 ## Contributing

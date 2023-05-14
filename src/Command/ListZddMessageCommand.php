@@ -9,8 +9,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Yousign\ZddMessageBundle\ZddMessageConfigInterface;
 
-#[AsCommand(name: 'yousign:zdd-message:debug', description: 'List tracked message')]
-class ListTrackedMessageCommand extends Command
+#[AsCommand(name: 'yousign:zdd-message:debug', description: 'List of managed messages to validate.')]
+class ListZddMessageCommand extends Command
 {
     public function __construct(
         private readonly ZddMessageConfigInterface $zddMessageConfig

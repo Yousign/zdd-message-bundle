@@ -1,30 +1,26 @@
 <?php
 
-namespace Func;
+namespace Yousign\ZddMessageBundle\Tests\Func;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Filesystem\Filesystem;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
 
-class ListTrackedMessageCommandTest extends KernelTestCase
+class ListZddMessageCommandTest extends KernelTestCase
 {
-    public function setUp(): void
+    private CommandTester $command;
+
+    protected function setUp(): void
     {
         parent::setUp();
-        $kernel = self::bootKernel();
-        $customBasePathFile = $kernel->getContainer()->getParameter('custom_path_file');
-        $this->serializedMessagesDir = $customBasePathFile.'/Messages';
 
-        (new Filesystem())->remove($this->serializedMessagesDir);
-        MessageConfig::reset();
+        $kernel = self::bootKernel();
+        $this->command = new CommandTester((new Application($kernel))->find('yousign:zdd-message:debug'));
     }
 
     public function testCommandIsSuccess(): void
     {
-        $commandTester = $this->getCommandTester();
-        $commandTester->execute([]);
+        $this->command->execute([]);
 
         $expectedResult = <<<EOF
          --- ------------------------- List of tracked messages for the zdd ------------------------------ 
@@ -37,13 +33,6 @@ class ListTrackedMessageCommandTest extends KernelTestCase
          --- ---------------------------------------------------------------------------------------------  
         EOF;
 
-        $this->assertSame(trim($expectedResult), trim($commandTester->getDisplay()));
-    }
-
-    private function getCommandTester(): CommandTester
-    {
-        $application = new Application(self::$kernel);
-
-        return new CommandTester($application->find('yousign:zdd-message:debug'));
+        $this->assertSame(trim($expectedResult), trim($this->command->getDisplay()));
     }
 }

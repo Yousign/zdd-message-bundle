@@ -4,7 +4,6 @@ namespace Yousign\ZddMessageBundle\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -13,13 +12,13 @@ use Yousign\ZddMessageBundle\Utils\ZddMessageFactory;
 use Yousign\ZddMessageBundle\Utils\ZddMessageFilesystem;
 use Yousign\ZddMessageBundle\ZddMessageConfigInterface;
 
-#[AsCommand(name: 'yousign:zdd-message', description: 'Serialize and validate ZDD messages.')]
-class ZddMessageCommand extends Command
+#[AsCommand(name: 'yousign:zdd-message:validate', description: 'Validate the serialized version of managed messages with the current version.')]
+class ValidateZddMessageCommand extends Command
 {
     private ZddMessageFactory $zddMessageFactory;
     private ZddMessageFilesystem $zddMessageFilesystem;
 
-    public function __construct(private string $zddMessagePath, private ZddMessageConfigInterface $zddMessageConfig)
+    public function __construct(private readonly string $zddMessagePath, private readonly ZddMessageConfigInterface $zddMessageConfig)
     {
         parent::__construct();
 
@@ -27,44 +26,10 @@ class ZddMessageCommand extends Command
         $this->zddMessageFilesystem = new ZddMessageFilesystem($this->zddMessagePath);
     }
 
-    protected function configure(): void
-    {
-        $this->addArgument('action', InputArgument::REQUIRED, 'Which action do you want to do ? Available actions: "serialize", "validate".');
-    }
-
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $action = $input->getArgument('action');
-
-        switch ($action) {
-            case 'serialize':
-                return $this->serializeAction($io);
-            case 'validate':
-                return $this->validateAction($io);
-            default:
-                $io->error('Please provide a valid action. Available actions: "serialize", "validate".');
-
-                return Command::INVALID;
-        }
-    }
-
-    private function serializeAction(SymfonyStyle $io): int
-    {
-        foreach ($this->zddMessageConfig->getMessageToAssert() as $messageFqcn) {
-            $zddMessage = $this->zddMessageFactory->create($messageFqcn);
-
-            $this->zddMessageFilesystem->write($zddMessage);
-
-            $io->success(\sprintf('Message "%s" written in directory "%s"', $messageFqcn, $this->zddMessagePath));
-        }
-
-        return Command::SUCCESS;
-    }
-
-    private function validateAction(SymfonyStyle $io): int
-    {
         $errorCount = 0;
         foreach ($this->zddMessageConfig->getMessageToAssert() as $messageFqcn) {
             if (false === $this->zddMessageFilesystem->exists($messageFqcn)) {

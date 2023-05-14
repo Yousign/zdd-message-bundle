@@ -8,8 +8,9 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use Yousign\ZddMessageBundle\Command\ListTrackedMessageCommand;
-use Yousign\ZddMessageBundle\Command\ZddMessageCommand;
+use Yousign\ZddMessageBundle\Command\GenerateZddMessageCommand;
+use Yousign\ZddMessageBundle\Command\ListZddMessageCommand;
+use Yousign\ZddMessageBundle\Command\ValidateZddMessageCommand;
 
 final class ZddMessageCompilerPass implements CompilerPassInterface
 {
@@ -26,8 +27,20 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
 
         $container
             ->setDefinition(
-                'yousign_zdd_message_command',
-                new Definition(ZddMessageCommand::class)
+                'yousign_generate_zdd_message_command',
+                new Definition(GenerateZddMessageCommand::class)
+            )
+            ->addTag('console.command')
+            ->setArguments([
+                $container->getParameter('yousign.zdd.message.serialized_messages_dir'),
+                new Reference($ids[0]),
+            ])
+        ;
+
+        $container
+            ->setDefinition(
+                'yousign_validate_zdd_message_command',
+                new Definition(ValidateZddMessageCommand::class)
             )
             ->addTag('console.command')
             ->setArguments([
@@ -39,7 +52,7 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
         $container
             ->setDefinition(
                 'yousign_list_tracked_message_command',
-                new Definition(ListTrackedMessageCommand::class)
+                new Definition(ListZddMessageCommand::class)
             )
             ->addTag('console.command')
             ->setArguments([

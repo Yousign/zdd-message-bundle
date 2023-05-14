@@ -5,3 +5,6 @@ composer.lock
 
 var/
 vendor/
+
+/tests/Fixtures/App/tmp/serialized_messages_directory/
+!/tests/Fixtures/App/tmp/serialized_messages_directory/.gitkeep
