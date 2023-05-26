@@ -11,8 +11,8 @@ class NullConfig implements ZddMessageConfigInterface
         return [];
     }
 
-    public function getCustomValueForPropertyType(): array
+    public function generateValueForCustomPropertyType(string $type): mixed
     {
-        return [];
+        return null;
     }
 }

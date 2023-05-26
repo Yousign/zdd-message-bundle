@@ -13,8 +13,14 @@ final class ZddMessage
     public function __construct(
         private readonly string $messageFqcn,
         private readonly string $serializedMessage,
-        private readonly array $notNullableProperties
+        private readonly array $notNullableProperties,
+        private readonly ?object $message = null,
     ) {
+    }
+
+    public function message(): ?object
+    {
+        return $this->message;
     }
 
     public function serializedMessage(): string

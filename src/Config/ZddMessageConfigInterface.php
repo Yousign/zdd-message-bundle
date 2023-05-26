@@ -38,18 +38,17 @@ interface ZddMessageConfigInterface
      *     // ...
      * }
      *
-     * The implementation of getCustomValueForPropertyType should be like this:
+     * The implementation of generateValueForCustomPropertyType should be like this:
      *
-     * public function getCustomValueForPropertyType(): array;
+     * public function generateValueForCustomPropertyType(string $type): array;
      * {
-     *    return [
+     *    return match($type) {
      *        'Namespace\MyObject' => new MyObject("Hi!"),
-     *    ];
+     *        default => null,
+     *    };
      * }
      *
      * @see MessageConfig in ZddMessageFakerTest.php for a concret examples
-     *
-     * @return array<string, mixed>
      */
-    public function getCustomValueForPropertyType(): array;
+    public function generateValueForCustomPropertyType(string $type): mixed;
 }

@@ -11,14 +11,6 @@ use Yousign\ZddMessageBundle\Exceptions\MissingValueForTypeException;
  */
 final class ZddPropertyExtractor
 {
-    private const SCALAR_VALUES = [
-        'string' => 'Hello World!',
-        'int' => 42,
-        'float' => 42.42,
-        'bool' => true,
-        'array' => ['PHP', 'For The Win'],
-    ];
-
     public function __construct(private readonly ZddMessageConfigInterface $config)
     {
     }
@@ -66,11 +58,18 @@ final class ZddPropertyExtractor
      */
     private function generateFakeValueFromType(string $typeHint): mixed
     {
-        $values = $this->config->getCustomValueForPropertyType() + self::SCALAR_VALUES;
-        if (array_key_exists($typeHint, $values)) {
-            return $values[$typeHint];
+        $value = $this->config->generateValueForCustomPropertyType($typeHint);
+        if (null !== $value) {
+            return $value;
         }
 
-        throw MissingValueForTypeException::missingValue($typeHint, $this->config);
+        return match ($typeHint) {
+            'string' => 'Hello World!',
+            'int' => 42,
+            'float' => 42.42,
+            'bool' => true,
+            'array' => ['PHP', 'For The Win'],
+            default => throw MissingValueForTypeException::missingValue($typeHint, $this->config),
+        };
     }
 }
