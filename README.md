@@ -2,8 +2,6 @@
 
 A Symfony Bundle to use when you want to assert that messages used with Message brokers such like RabbitMQ are compliant with the Zero Downtime Deployment.
 
-#### :warning: This bundle is still in development (Wait the 1st tag release to use it).
-
 ## Getting started
 ### Installation
 You can easily install Zdd Message bundle by composer
@@ -43,12 +41,13 @@ class MessageConfig implements ZddMessageConfigInterface
      * If your message contains no scalar value as parameter such like value enums, value object more complex object,
      * you should use this method to return value for each type hint.
      */
-    public function getCustomValueForPropertyType(): array
+    public function generateValueForCustomPropertyType(string $type): mixed;
     {
-        return [
+        return match ($type) {
             'App\ValueObject\Email' => new App\ValueObject\Email('dummy@email.fr'),
             'App\Enum\MyEnum' => App\Enum\MyEnum::MY_VALUE,
-        ];
+            default => null,
+        };
     }
 }
 ```

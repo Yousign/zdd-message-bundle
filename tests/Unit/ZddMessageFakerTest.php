@@ -87,8 +87,8 @@ final class WithoutValueConfig implements ZddMessageConfigInterface
         ];
     }
 
-    public function getCustomValueForPropertyType(): array
+    public function generateValueForCustomPropertyType(string $type): mixed
     {
-        return [];
+        return null;
     }
 }

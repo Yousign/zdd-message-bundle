@@ -30,7 +30,7 @@ final class ZddMessageFactory
             $this->forcePropertyValue($message, $property, $value);
         }
 
-        return new ZddMessage($className, serialize($message), $propertyList->getNotNullableProperties());
+        return new ZddMessage($className, serialize($message), $propertyList->getNotNullableProperties(), $message);
     }
 
     private function forcePropertyValue(object $object, string $property, mixed $value): void
