@@ -24,7 +24,11 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
             $ids[] = $id;
         }
 
-        if (1 !== \count($ids)) {
+        if (0 === \count($ids)) {
+            return;
+        }
+
+        if (\count($ids) > 1) {
             throw new \LogicException('Only one instance of ZddMessageConfigInterface allowed.');
         }
 

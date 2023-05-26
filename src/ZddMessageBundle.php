@@ -9,9 +9,6 @@ use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 use Yousign\ZddMessageBundle\DependencyInjection\ZddMessageCompilerPass;
 
-/**
- * @internal
- */
 final class ZddMessageBundle extends AbstractBundle
 {
     public function configure(DefinitionConfigurator $definition): void
