@@ -40,6 +40,19 @@ class GenerateZddMessageCommandTest extends KernelTestCase
 
         $this->assertDirectoryExists($this->serializedMessagesDir);
         $this->assertSerializedFilesExist($this->serializedMessagesDir);
+
+        $expectedResult = <<<EOF
+         --- --------------------------------------------------------------------------------------------- 
+          #   Message                                                                                      
+         --- --------------------------------------------------------------------------------------------- 
+          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage                            
+          2   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty  
+          3   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor      
+          4   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes         
+         --- ---------------------------------------------------------------------------------------------  
+        EOF;
+
+        $this->assertSame(trim($expectedResult), trim($this->command->getDisplay()));
     }
 
     private function assertSerializedFilesExist(string $baseDirectory): void
