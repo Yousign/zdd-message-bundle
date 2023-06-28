@@ -47,10 +47,16 @@ class ValidateZddMessageCommandTest extends KernelTestCase
         $this->command->execute([]);
 
         $this->command->assertCommandIsSuccessful();
-        self::assertStringStartsWith(
-            '[OK] Message "Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage" is ZDD compliant ✅',
-            $this->getReadableOutput($this->command)
-        );
+
+        $expectedResult = <<<EOF
+         --- ------------------------------------------------------------------- ---------------- 
+          #   Message                                                             ZDD Compliant?  
+         --- ------------------------------------------------------------------- ---------------- 
+          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   Yes ✅          
+         --- ------------------------------------------------------------------- ----------------
+        EOF;
+
+        $this->assertSame(trim($expectedResult), trim($this->command->getDisplay()));
     }
 
     public function testThatCommandIsSuccessfulEvenIfTheSerializedMessageDoesNotExists(): void
@@ -60,10 +66,16 @@ class ValidateZddMessageCommandTest extends KernelTestCase
         $this->command->execute([]);
 
         $this->command->assertCommandIsSuccessful();
-        self::assertStringStartsWith(
-            '[OK] Message "Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage" is ZDD compliant ✅',
-            $this->getReadableOutput($this->command)
-        );
+
+        $expectedResult = <<<EOF
+         --- ------------------------------------------------------------------- ---------------- 
+          #   Message                                                             ZDD Compliant?  
+         --- ------------------------------------------------------------------- ---------------- 
+          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   Yes ✅          
+         --- ------------------------------------------------------------------- ----------------
+        EOF;
+
+        $this->assertSame(trim($expectedResult), trim($this->command->getDisplay()));
     }
 
     public function testThatCommandFailsWhenMessageIsNotZddCompliant(): void
@@ -78,10 +90,17 @@ class ValidateZddMessageCommandTest extends KernelTestCase
         $this->command->execute([]);
 
         self::assertEquals(Command::FAILURE, $this->command->getStatusCode());
-        self::assertStringStartsWith(
-            '[ERROR] Message "Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage',
-            $this->getReadableOutput($this->command)
-        );
+        $expectedResult = <<<EOF
+         --- ------------------------------------------------------------------- ---------------- 
+          #   Message                                                             ZDD Compliant?  
+         --- ------------------------------------------------------------------- ---------------- 
+          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   No ❌           
+         --- ------------------------------------------------------------------- ---------------- 
+        
+         ! [NOTE] 1 error(s) triggered.
+        EOF;
+
+        $this->assertSame(trim($expectedResult), trim($this->command->getDisplay()));
     }
 
     private function getSerializedMessageAndNotNullablePropertiesForPreviousVersionOfDummyMessageWithNumberProperty(): array
@@ -95,13 +114,6 @@ class ValidateZddMessageCommandTest extends KernelTestCase
                 'number' => 'int',
             ],
         ];
-    }
-
-    private function getReadableOutput(CommandTester $commandTester): string
-    {
-        return trim(preg_replace('/  +/', ' ',
-            str_replace(PHP_EOL, '', $commandTester->getDisplay())
-        ));
     }
 
     private function assertSerializedFilesExist(string $baseDirectory): void
