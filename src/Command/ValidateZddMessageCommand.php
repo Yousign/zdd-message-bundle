@@ -30,8 +30,11 @@ final class ValidateZddMessageCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
+        $table = $io->createTable();
+        $table->setHeaders(['#', 'Message', 'ZDD Compliant?']);
+
         $errorCount = 0;
-        foreach ($this->zddMessageConfig->getMessageToAssert() as $messageFqcn) {
+        foreach ($this->zddMessageConfig->getMessageToAssert() as $key => $messageFqcn) {
             if (false === $this->zddMessageFilesystem->exists($messageFqcn)) {
                 // It happens on newly added message, the trade-off here is to validate itself on current version
                 $zddMessage = $this->zddMessageFactory->create($messageFqcn);
@@ -43,12 +46,14 @@ final class ValidateZddMessageCommand extends Command
             try {
                 ZddMessageAssert::assert($messageFqcn, $messageToAssert->serializedMessage(), $messageToAssert->notNullableProperties());
 
-                $io->success(\sprintf('Message "%s" is ZDD compliant ✅', $messageFqcn));
+                $table->addRow([$key + 1, $messageFqcn, 'Yes ✅']);
             } catch (\Throwable $e) {
-                $io->error(\sprintf('Message "%s" is not ZDD compliant ❌. The error is "%s"', $messageFqcn, $e->getMessage()));
+                $table->addRow([$key + 1, $messageFqcn, 'No ❌']);
                 ++$errorCount;
             }
         }
+
+        $table->render();
 
         if (0 !== $errorCount) {
             $io->note(\sprintf('%d error(s) triggered.', $errorCount));

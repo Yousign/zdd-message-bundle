@@ -29,13 +29,18 @@ final class GenerateZddMessageCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        foreach ($this->zddMessageConfig->getMessageToAssert() as $messageFqcn) {
+        $table = $io->createTable();
+        $table->setHeaders(['#', 'Message']);
+
+        foreach ($this->zddMessageConfig->getMessageToAssert() as $key => $messageFqcn) {
             $zddMessage = $this->zddMessageFactory->create($messageFqcn);
 
             $this->zddMessageFilesystem->write($zddMessage);
 
-            $io->success(\sprintf('Message "%s" written in directory "%s"', $messageFqcn, $this->zddMessagePath));
+            $table->addRow([$key + 1, $messageFqcn]);
         }
+
+        $table->render();
 
         return Command::SUCCESS;
     }
