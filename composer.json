@@ -16,7 +16,8 @@
         "friendsofphp/php-cs-fixer": "^3.1",
         "symfony/browser-kit": "^6.2",
         "symfony/framework-bundle": "^6.2",
-        "symfony/yaml": "^6.2"
+        "symfony/yaml": "^6.2",
+        "symfony/messenger": "^6.2"
     },
     "autoload": {
         "psr-4": {

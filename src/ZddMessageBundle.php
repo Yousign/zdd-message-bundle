@@ -18,6 +18,16 @@ final class ZddMessageBundle extends AbstractBundle
             ->rootNode()
                 ->children()
                     ->scalarNode('serialized_messages_dir')->defaultNull()->end()
+                    ->arrayNode('log_untracked_messages')
+                        ->children()
+                            ->arrayNode('messenger')
+                                ->children()
+                                    ->booleanNode('enable')->defaultFalse()->end()
+                                    ->scalarNode('level')->defaultValue('warning')->end()
+                                ->end()
+                            ->end() // messenger
+                        ->end()
+                    ->end() // log_untracked_messages
                 ->end()
             ->end()
         ;
@@ -29,6 +39,8 @@ final class ZddMessageBundle extends AbstractBundle
         $containerBuilder->registerForAutoconfiguration(ZddMessageConfigInterface::class)->addTag('yousign.zdd.message.config');
 
         $containerBuilder->setParameter('yousign.zdd.message.serialized_messages_dir', $config['serialized_messages_dir'] ?? $this->getDefaultPath($containerBuilder));
+        $containerBuilder->setParameter('yousign.zdd.message.log_untracked_messages.messenger.enable', $config['log_untracked_messages']['messenger']['enable'] ?? false);
+        $containerBuilder->setParameter('yousign.zdd.message.log_untracked_messages.messenger.level', $config['log_untracked_messages']['messenger']['level'] ?? 'warning');
     }
 
     private function getDefaultPath(ContainerBuilder $containerBuilder): string
