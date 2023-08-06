@@ -9,7 +9,7 @@ test: ## Run code tests
 	./vendor/bin/phpunit --testdox
 
 phpstan:
-	./vendor/bin/phpstan analyse src --level=9
+	./vendor/bin/phpstan analyse
 
 test-phpcs: ## Run coding standard tests
 	./vendor/bin/php-cs-fixer --diff --dry-run --using-cache=no -v fix src

@@ -1,0 +1,15 @@
+parameters:
+    level: 9
+    paths:
+        - src
+
+    ignoreErrors:
+        -
+            message: '#^(Parameter) .+ has invalid type Symfony\\Component\\Messenger\\Event\\WorkerMessageReceivedEvent\.$#'
+            path: src/Listener/SymfonyMessenger/MessengerListener.php
+        -
+            message: '#Call to method .+ on an unknown class Symfony\\Component\\Messenger\\Event\\WorkerMessageReceivedEvent\.$#'
+            path: src/Listener/SymfonyMessenger/MessengerListener.php
+        -
+            message: '#Class Symfony\\Component\\Messenger\\Event\\WorkerMessageReceivedEvent not found#'
+            path: src/Listener/SymfonyMessenger/MessengerListener.php

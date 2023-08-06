@@ -14,3 +14,7 @@ services:
 
 zdd_message:
     serialized_messages_dir: '%custom_path_file%'
+    log_untracked_message:
+      enable: true
+      level: warning
+

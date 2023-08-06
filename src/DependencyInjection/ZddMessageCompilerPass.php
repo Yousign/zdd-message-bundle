@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\Reference;
 use Yousign\ZddMessageBundle\Command\GenerateZddMessageCommand;
 use Yousign\ZddMessageBundle\Command\ListZddMessageCommand;
 use Yousign\ZddMessageBundle\Command\ValidateZddMessageCommand;
+use Yousign\ZddMessageBundle\Listener\SymfonyMessenger\MessengerListener;
 
 /**
  * @internal
@@ -32,6 +33,7 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
             throw new \LogicException('Only one instance of ZddMessageConfigInterface allowed.');
         }
 
+        $zddMessageConfig = $ids[0];
         $container
             ->setDefinition(
                 'yousign_generate_zdd_message_command',
@@ -40,7 +42,7 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
             ->addTag('console.command')
             ->setArguments([
                 $container->getParameter('yousign.zdd.message.serialized_messages_dir'),
-                new Reference($ids[0]),
+                new Reference($zddMessageConfig),
             ])
         ;
 
@@ -52,7 +54,7 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
             ->addTag('console.command')
             ->setArguments([
                 $container->getParameter('yousign.zdd.message.serialized_messages_dir'),
-                new Reference($ids[0]),
+                new Reference($zddMessageConfig),
             ])
         ;
 
@@ -63,8 +65,23 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
             )
             ->addTag('console.command')
             ->setArguments([
-                new Reference($ids[0]),
+                new Reference($zddMessageConfig),
             ])
         ;
+
+        if (true === $container->getParameter('yousign.zdd.message.log_untracked_message.enable')) {
+            $container
+                ->setDefinition(
+                    'yousign_symfony_messenger_listener',
+                    new Definition(MessengerListener::class)
+                )
+                ->addTag('kernel.event_subscriber')
+                ->setArguments([
+                    new Reference('logger'),
+                    new Reference($zddMessageConfig),
+                    $container->getParameter('yousign.zdd.message.log_untracked_message.level'),
+                ])
+            ;
+        }
     }
 }
