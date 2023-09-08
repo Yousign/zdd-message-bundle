@@ -1,12 +1,11 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Tests\Unit;
+namespace Yousign\ZddMessageBundle\Tests\Unit\Listener\Symfony;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Messenger\Event\Root;
-use Symfony\Component\Messenger\Event\User;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
-use Yousign\ZddMessageBundle\Listener\SymfonyMessenger\MessengerListener;
+use Yousign\ZddMessageBundle\Listener\Symfony\MessengerListener;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Logger\SpyLogger;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
@@ -17,11 +16,12 @@ use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status;
 
 class MessengerListenerTest extends TestCase
 {
-    public function provideTrackedMessage(): iterable
+    public function provideTrackedMessages(): iterable
     {
         yield DummyMessage::class => [
             new DummyMessage('Hello World'),
         ];
+
         yield DummyMessageWithAllManagedTypes::class => [
             new DummyMessageWithAllManagedTypes(
                 'Hello World',
@@ -29,63 +29,70 @@ class MessengerListenerTest extends TestCase
                 false,
                 ['PHP', 'is', 'not', 'dead'],
                 new Locale('fr'),
-                Status::DRAFT
+                Status::DRAFT,
             ),
         ];
+
         yield DummyMessageWithNullableNumberProperty::class => [
             new DummyMessageWithNullableNumberProperty('Hello World'),
         ];
     }
 
     /**
-     * @dataProvider provideTrackedMessage
+     * @dataProvider provideTrackedMessages
      */
     public function testOnMessageReceivedLogNothingWhenMessageIsTracked(object $message): void
     {
         $messageListener = new MessengerListener(
             $spyLogger = new SpyLogger(),
             new MessageConfig(),
-            'warning'
+            'warning',
         );
 
-        $event = new WorkerMessageReceivedEvent($message);
+        $event = new WorkerMessageReceivedEvent(new Envelope($message), 'receiver');
 
         $messageListener->onMessageReceived($event);
 
-        self::assertNull($spyLogger->getLogs('warning'));
+        self::assertEmpty($spyLogger->getLogs());
     }
 
-    public function provideUnTrackedMessage(): iterable
+    public function provideUntrackedMessages(): iterable
     {
-        yield Locale::class => [new Locale('en'), Locale::class, 'info'];
-        yield User::class => [new User('Smaone', new \DateTime()), User::class, 'debug'];
-        yield 'User embedded in Root' => [new Root(new User('Smaone', new \DateTime())), User::class, 'error'];
+        yield OtherDummyMessage::class => [
+            new OtherDummyMessage('Smaone', new \DateTime()),
+            OtherDummyMessage::class,
+            'debug',
+        ];
+
+        yield 'OtherDummyMessage embedded in OtherDummyMessageAsEnveloppe' => [
+            new OtherDummyMessageAsEnveloppe(new OtherDummyMessage('Smaone', new \DateTime())),
+            OtherDummyMessage::class,
+            'error',
+        ];
     }
 
     /**
-     * @dataProvider provideUnTrackedMessage
+     * @dataProvider provideUntrackedMessages
      */
-    public function testOnMessageReceivedLogWarningWhenMessageIsNotTracked(object $message, string $class, string $logLevel): void
+    public function testOnMessageReceivedLogMessageWhenMessageIsNotTracked(object $message, string $class, string $logLevel): void
     {
         $messageListener = new MessengerListener(
             $spyLogger = new SpyLogger(),
             new MessageConfig(),
-            $logLevel
+            $logLevel,
         );
 
-        $event = new WorkerMessageReceivedEvent($message);
+        $event = new WorkerMessageReceivedEvent(new Envelope($message), 'receiver');
 
         $messageListener->onMessageReceived($event);
 
-        $log = $spyLogger->getLogs($logLevel)['message'] ?? null;
-
-        self::assertEquals(
-            sprintf(
-                'The message "%s" is not in `ZddMessageConfigInterface::getMessageToAssert` and it is not tested as ZDD compliant',
-                $class
-            ),
-            $log
-        );
+        self::assertTrue($spyLogger->hasRecord(
+            'Untracked message has been detected, add it in your configuration to ensure ZDD compliance.',
+            $logLevel,
+            [
+                'message' => $class,
+            ]
+        ));
     }
 
     public function testOnMessageReceivedLogNothingWhenGetMessageIsNotAnObject(): void
@@ -93,20 +100,20 @@ class MessengerListenerTest extends TestCase
         $messageListener = new MessengerListener(
             $spyLogger = new SpyLogger(),
             new MessageConfig(),
-            'warning'
+            'warning',
         );
 
         $message = new class() {
-            public function getMessage()
+            public function getMessage(): string
             {
                 return 'App\Foo\Class\Not\Exist';
             }
         };
-        $event = new WorkerMessageReceivedEvent($message);
+        $event = new WorkerMessageReceivedEvent(new Envelope($message), 'receiver');
 
         $messageListener->onMessageReceived($event);
 
-        self::assertNull($spyLogger->getLogs('warning'));
+        self::assertEmpty($spyLogger->getLogs());
     }
 
     public function testOnMessageReceivedLogAWarningWhenAnErrorOccurs(): void
@@ -122,61 +129,26 @@ class MessengerListenerTest extends TestCase
                 throw new \Exception('dummy error');
             }
         };
-        $event = new WorkerMessageReceivedEvent($message);
+        $event = new WorkerMessageReceivedEvent(new Envelope($message), 'receiver');
 
         $messageListener->onMessageReceived($event);
 
-        $logMessage = $spyLogger->getLogs('warning')['message'] ?? null;
-        $logContext = $spyLogger->getLogs('warning')['context'] ?? null;
-
-        self::assertEquals(
+        self::assertTrue($spyLogger->hasRecord(
             'An error occurred when comparing the consumed message to the messages in `ZddMessageConfigInterface::getMessageToAssert`',
-            $logMessage
-        );
-        self::assertEquals(
+            'warning',
             ['dummy error'],
-            $logContext
-        );
+        ));
     }
 }
 
-namespace Symfony\Component\Messenger\Event;
-
-class WorkerMessageReceivedEvent
-{
-    private $enveloppe;
-
-    public function __construct(private readonly object $message)
-    {
-        $this->enveloppe = new Envelope($this->message);
-    }
-
-    public function getEnvelope()
-    {
-        return $this->enveloppe;
-    }
-}
-
-class Envelope
-{
-    public function __construct(private readonly object $message)
-    {
-    }
-
-    public function getMessage(): object
-    {
-        return $this->message;
-    }
-}
-
-class User
+class OtherDummyMessage
 {
     public function __construct(private readonly string $name, private readonly \DateTime $createdAt)
     {
     }
 }
 
-class Root
+class OtherDummyMessageAsEnveloppe
 {
     public function __construct(private readonly object $message)
     {

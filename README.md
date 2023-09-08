@@ -41,7 +41,7 @@ class MessageConfig implements ZddMessageConfigInterface
      * If your message contains no scalar value as parameter such like value enums, value object more complex object,
      * you should use this method to return value for each type hint.
      */
-    public function generateValueForCustomPropertyType(string $type): mixed;
+    public function generateValueForCustomPropertyType(string $type): mixed
     {
         return match ($type) {
             'App\ValueObject\Email' => new App\ValueObject\Email('dummy@email.fr'),

@@ -8,10 +8,11 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
 use Yousign\ZddMessageBundle\Command\GenerateZddMessageCommand;
 use Yousign\ZddMessageBundle\Command\ListZddMessageCommand;
 use Yousign\ZddMessageBundle\Command\ValidateZddMessageCommand;
-use Yousign\ZddMessageBundle\Listener\SymfonyMessenger\MessengerListener;
+use Yousign\ZddMessageBundle\Listener\Symfony\MessengerListener;
 
 /**
  * @internal
@@ -69,7 +70,11 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
             ])
         ;
 
-        if (true === $container->getParameter('yousign.zdd.message.log_untracked_message.enable')) {
+        if (!class_exists(WorkerMessageReceivedEvent::class)) {
+            return;
+        }
+
+        if (true === $container->getParameter('yousign.zdd.message.log_untracked_message.messenger.enable')) {
             $container
                 ->setDefinition(
                     'yousign_symfony_messenger_listener',
@@ -79,7 +84,7 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
                 ->setArguments([
                     new Reference('logger'),
                     new Reference($zddMessageConfig),
-                    $container->getParameter('yousign.zdd.message.log_untracked_message.level'),
+                    $container->getParameter('yousign.zdd.message.log_untracked_message.messenger.level'),
                 ])
             ;
         }

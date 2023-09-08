@@ -1,6 +1,6 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Listener\SymfonyMessenger;
+namespace Yousign\ZddMessageBundle\Listener\Symfony;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -19,7 +19,6 @@ final class MessengerListener implements EventSubscriberInterface
     public function onMessageReceived(WorkerMessageReceivedEvent $event): void
     {
         try {
-            /** @var object $message */
             $message = $event->getEnvelope()->getMessage();
             // In case of $message act like an envelope.
             if (method_exists($message, 'getMessage')) {
@@ -29,10 +28,11 @@ final class MessengerListener implements EventSubscriberInterface
             if (is_object($message) && !in_array($class = get_class($message), $this->config->getMessageToAssert(), true)) {
                 $this->logger->log(
                     $this->logLevel,
-                    sprintf(
-                        'The message "%s" is not in `ZddMessageConfigInterface::getMessageToAssert` and it is not tested as ZDD compliant',
-                        $class
-                    ));
+                    'Untracked message has been detected, add it in your configuration to ensure ZDD compliance.',
+                    [
+                        'message' => $class,
+                    ],
+                );
             }
         } catch (\Throwable $throwable) {
             // The listener should not throw an exception.
