@@ -74,7 +74,7 @@ Option to write a log message if an asynchronous message has been sent (using sy
 # config/packages/zdd_message.yaml
 zdd_message:
   # ...
-  log_untracked_message:
+  log_untracked_messages:
     messenger:
       enable: true # false by default
       level: 'error' # warning by default

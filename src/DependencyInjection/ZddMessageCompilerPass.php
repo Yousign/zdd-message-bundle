@@ -74,7 +74,7 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
             return;
         }
 
-        if (true === $container->getParameter('yousign.zdd.message.log_untracked_message.messenger.enable')) {
+        if (true === $container->getParameter('yousign.zdd.message.log_untracked_messages.messenger.enable')) {
             $container
                 ->setDefinition(
                     'yousign_symfony_messenger_listener',
@@ -84,7 +84,7 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
                 ->setArguments([
                     new Reference('logger'),
                     new Reference($zddMessageConfig),
-                    $container->getParameter('yousign.zdd.message.log_untracked_message.messenger.level'),
+                    $container->getParameter('yousign.zdd.message.log_untracked_messages.messenger.level'),
                 ])
             ;
         }
