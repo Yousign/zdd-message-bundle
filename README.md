@@ -66,6 +66,20 @@ Then, you should register it in the configuration (`config/packages/zdd_message.
     serialized_messages_dir: 'var/serialized_messages' # The directory where the serialized messages will be stored (default: '%kernel.logs_dir%')
 ```
 
+#### Optional configuration (for symfony messenger)
+
+Option to write a log message if an asynchronous message has been sent (using symfony messenger) and is not present in your configuration.
+
+```yaml
+# config/packages/zdd_message.yaml
+zdd_message:
+  # ...
+  log_untracked_message:
+    messenger:
+      enable: true # false by default
+      level: 'error' # warning by default
+```
+
 ## Usage
 The bundle comes with commands to assert that your messages are compliant with the Zero Downtime Deployment:
 
