@@ -28,7 +28,7 @@ final class MessengerListener implements EventSubscriberInterface
             if (is_object($message) && !in_array($class = get_class($message), $this->config->getMessageToAssert(), true)) {
                 $this->logger->log(
                     $this->logLevel,
-                    'Untracked message has been detected, add it in your configuration to ensure ZDD compliance.',
+                    'Untracked {message} has been detected, add it in your configuration to ensure ZDD compliance.',
                     [
                         'message' => $class,
                     ],

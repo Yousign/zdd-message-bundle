@@ -87,7 +87,7 @@ class MessengerListenerTest extends TestCase
         $messageListener->onMessageReceived($event);
 
         self::assertTrue($spyLogger->hasRecord(
-            'Untracked message has been detected, add it in your configuration to ensure ZDD compliance.',
+            'Untracked {message} has been detected, add it in your configuration to ensure ZDD compliance.',
             $logLevel,
             [
                 'message' => $class,
