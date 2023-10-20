@@ -9,6 +9,7 @@ use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullabl
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status;
+use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Other;
 
 class MessageConfig implements ZddMessageConfigInterface
 {
@@ -21,6 +22,7 @@ class MessageConfig implements ZddMessageConfigInterface
             DummyMessageWithNullableNumberProperty::class,
             DummyMessageWithPrivateConstructor::class,
             DummyMessageWithAllManagedTypes::class,
+            Other\DummyMessage::class,
         ];
     }
 

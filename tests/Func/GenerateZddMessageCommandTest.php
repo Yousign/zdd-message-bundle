@@ -21,7 +21,7 @@ class GenerateZddMessageCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $this->command = new CommandTester((new Application($kernel))->find('yousign:zdd-message:generate'));
         $customBasePathFile = $kernel->getContainer()->getParameter('custom_path_file');
-        $this->serializedMessagesDir = $customBasePathFile.'/Messages';
+        $this->serializedMessagesDir = $customBasePathFile.'/Yousign/ZddMessageBundle/Tests/Fixtures/App/Messages';
     }
 
     protected function tearDown(): void
@@ -49,6 +49,7 @@ class GenerateZddMessageCommandTest extends KernelTestCase
           2   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty  
           3   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor      
           4   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes         
+          5   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Other\DummyMessage                      
          --- ---------------------------------------------------------------------------------------------  
         EOF;
 
