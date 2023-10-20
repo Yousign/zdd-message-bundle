@@ -7,13 +7,10 @@ namespace Yousign\ZddMessageBundle\Factory;
  */
 final class ZddMessage
 {
-    /**
-     * @param array<string, string> $notNullableProperties
-     */
     public function __construct(
         private readonly string $messageFqcn,
         private readonly string $serializedMessage,
-        private readonly array $notNullableProperties,
+        private readonly PropertyList $propertyList,
         private readonly ?object $message = null,
     ) {
     }
@@ -28,12 +25,9 @@ final class ZddMessage
         return $this->serializedMessage;
     }
 
-    /**
-     * @return array<string, string>
-     */
-    public function notNullableProperties(): array
+    public function propertyList(): PropertyList
     {
-        return $this->notNullableProperties;
+        return $this->propertyList;
     }
 
     public function messageFqcn(): string

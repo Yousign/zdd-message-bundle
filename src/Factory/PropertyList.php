@@ -8,39 +8,95 @@ namespace Yousign\ZddMessageBundle\Factory;
 final class PropertyList
 {
     /**
-     * @var array<string, mixed>
+     * @var Property[]
      */
     private array $properties = [];
 
     /**
-     * @var array<string, string>
+     * @param Property[] $properties
      */
-    private array $notNullableProperties = [];
-
-    public function addNullableProperty(string $propertyName): void
+    public function __construct(array $properties = [])
     {
-        $this->properties[$propertyName] = null;
+        foreach ($properties as $property) {
+            $this->properties[$property->name] = $property;
+        }
     }
 
-    public function addProperty(string $propertyName, string $type, mixed $value): void
+    public function addProperty(Property $property): void
     {
-        $this->properties[$propertyName] = $value;
-        $this->notNullableProperties[$propertyName] = $type;
+        $this->properties[$property->name] = $property;
+    }
+
+    public static function fromJson(string $data): self
+    {
+        /** @var array<array<string,string>> $decodedProperties */
+        $decodedProperties = \json_decode($data, true);
+        $properties = [];
+        foreach ($decodedProperties as $decodedProperty) {
+            $name = $decodedProperty['name'] ?? null;
+            $type = $decodedProperty['type'] ?? null;
+
+            if (null === $name || null === $type) {
+                throw new \LogicException(sprintf('Missing keys name and/or type in decoded properties from data: "%s"', $data));
+            }
+            $properties[] = new Property($decodedProperty['name'], $decodedProperty['type'], null);
+        }
+
+        return new self($properties);
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string>
+     */
+    public function getPropertiesName(): array
+    {
+        return array_keys($this->properties);
+    }
+
+    /**
+     * @return Property[]
      */
     public function getProperties(): array
     {
         return $this->properties;
     }
 
-    /**
-     * @return array<string, string>
-     */
-    public function getNotNullableProperties(): array
+    public function has(string $name): bool
     {
-        return $this->notNullableProperties;
+        return array_key_exists($name, $this->properties);
+    }
+
+    public function get(string $name): Property
+    {
+        $property = $this->properties[$name] ?? null;
+
+        if (null === $property) {
+            throw new \LogicException(sprintf('No property "%s" found in the properties list', $name));
+        }
+
+        return $property;
+    }
+
+    public function remove(string $name): void
+    {
+        unset($this->properties[$name]);
+    }
+
+    public function count(): int
+    {
+        return count($this->properties);
+    }
+
+    public function toJson(): string
+    {
+        $data = [];
+        foreach ($this->properties as $property) {
+            $data[] = [
+                'name' => $property->name,
+                'type' => $property->type,
+            ];
+        }
+
+        return json_encode($data, JSON_THROW_ON_ERROR);
     }
 }

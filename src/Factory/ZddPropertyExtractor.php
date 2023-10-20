@@ -36,18 +36,13 @@ final class ZddPropertyExtractor
                 throw InvalidTypeException::typeMissing($propertyName, $className);
             }
 
-            if ($propertyType->allowsNull()) {
-                $propertyList->addNullableProperty($propertyName);
-
-                continue;
-            }
-
             if (!$propertyType instanceof \ReflectionNamedType) {
                 throw InvalidTypeException::typeNotSupported();
             }
 
             $typeHint = $propertyType->getName();
-            $propertyList->addProperty($propertyName, $typeHint, $this->generateFakeValueFromType($typeHint));
+            $value = $propertyType->allowsNull() ? null : $this->generateFakeValueFromType($typeHint);
+            $propertyList->addProperty(new Property($propertyName, $typeHint, $value));
         }
 
         return $propertyList;

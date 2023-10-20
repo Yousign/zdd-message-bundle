@@ -26,11 +26,11 @@ final class ZddMessageFactory
         $propertyList = $this->propertyExtractor->extractPropertiesFromClass($className);
 
         $message = (new \ReflectionClass($className))->newInstanceWithoutConstructor();
-        foreach ($propertyList->getProperties() as $property => $value) {
-            $this->forcePropertyValue($message, $property, $value);
+        foreach ($propertyList->getProperties() as $property) {
+            $this->forcePropertyValue($message, $property->name, $property->value);
         }
 
-        return new ZddMessage($className, serialize($message), $propertyList->getNotNullableProperties(), $message);
+        return new ZddMessage($className, serialize($message), $propertyList, $message);
     }
 
     private function forcePropertyValue(object $object, string $property, mixed $value): void

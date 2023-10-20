@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yousign\ZddMessageBundle\Filesystem;
 
+use Yousign\ZddMessageBundle\Factory\PropertyList;
 use Yousign\ZddMessageBundle\Factory\ZddMessage;
 
 /**
@@ -30,10 +31,10 @@ final class ZddMessageFilesystem
             throw new \RuntimeException(\sprintf('Unable to write file "%s"', $serializedMessagePath));
         }
 
-        $notNullablePropertiesPath = $this->getPathToNotNullableProperties($zddMessage->messageFqcn());
-        $byteWrittenInJson = \file_put_contents($notNullablePropertiesPath, \json_encode($zddMessage->notNullableProperties()));
+        $propertiesPath = $this->getPathToProperties($zddMessage->messageFqcn());
+        $byteWrittenInJson = \file_put_contents($propertiesPath, $zddMessage->propertyList()->toJson());
         if (false === $byteWrittenInJson || 0 === $byteWrittenInJson) {
-            throw new \RuntimeException(\sprintf('Unable to write file "%s"', $notNullablePropertiesPath));
+            throw new \RuntimeException(\sprintf('Unable to write file "%s"', $propertiesPath));
         }
     }
 
@@ -44,14 +45,14 @@ final class ZddMessageFilesystem
             throw new \RuntimeException(\sprintf('Unable to read file "%s"', $serializedMessagePath));
         }
 
-        $notNullablePropertiesPath = $this->getPathToNotNullableProperties($messageFqcn);
-        if (false === $notNullableProperties = \file_get_contents($notNullablePropertiesPath)) {
-            throw new \RuntimeException(\sprintf('Unable to read file "%s"', $notNullablePropertiesPath));
+        $propertiesPath = $this->getPathToProperties($messageFqcn);
+        if (false === $properties = \file_get_contents($propertiesPath)) {
+            throw new \RuntimeException(\sprintf('Unable to read file "%s"', $propertiesPath));
         }
-        $notNullableProperties = \json_decode($notNullableProperties, true);
 
-        /* @phpstan-ignore-next-line as $notNullableProperties comes from system */
-        return new ZddMessage($messageFqcn, $serializedMessage, $notNullableProperties);
+        $propertyList = PropertyList::fromJson($properties);
+
+        return new ZddMessage($messageFqcn, $serializedMessage, $propertyList);
     }
 
     public function exists(string $messageFqcn): bool
@@ -80,11 +81,11 @@ final class ZddMessageFilesystem
         return $this->zddPath.'/'.$directory.'/'.$shortName.'.txt';
     }
 
-    private function getPathToNotNullableProperties(string $messageFqcn): string
+    private function getPathToProperties(string $messageFqcn): string
     {
         [$directory, $shortName] = $this->getDirectoryAndShortname($messageFqcn);
 
-        return $this->zddPath.'/'.$directory.'/'.$shortName.'.not_nullable_properties.json';
+        return $this->zddPath.'/'.$directory.'/'.$shortName.'.properties.json';
     }
 
     private function getBasePath(string $messageFqcn): string
