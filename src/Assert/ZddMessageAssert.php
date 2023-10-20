@@ -30,17 +30,6 @@ final class ZddMessageAssert
         foreach ($properties as $property) {
             // ✅ Assert error "Typed property Message::$theProperty must not be accessed before initialization".
             $property->getValue($object); // @phpstan-ignore-line :::  Call to method ReflectionProperty::getValue() on a separate line has no effect.
-
-            $method = $property->name;
-            if (method_exists($object, $method)) {
-                $object->{$method}();
-                continue;
-            }
-
-            $method = 'get'.ucfirst($method);
-            if (method_exists($object, $method)) {
-                $object->{$method}();
-            }
         }
 
         // ✅ Assert not nullable property has been removed
