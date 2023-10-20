@@ -67,8 +67,9 @@ final class ZddMessageFilesystem
     private function getDirectoryAndShortname(string $classFqcn): array
     {
         $path = explode('\\', $classFqcn);
-        $directory = $path[\count($path) - 2];
         $shortName = end($path);
+        array_pop($path);
+        $directory = implode('/', $path);
 
         return [$directory, $shortName];
     }

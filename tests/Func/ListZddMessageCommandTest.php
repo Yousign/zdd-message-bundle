@@ -30,6 +30,7 @@ class ListZddMessageCommandTest extends KernelTestCase
           2   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty  
           3   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor      
           4   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes         
+          5   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Other\DummyMessage                      
          --- ---------------------------------------------------------------------------------------------  
         EOF;
 

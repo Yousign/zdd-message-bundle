@@ -22,7 +22,7 @@ class ValidateZddMessageCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $this->command = new CommandTester((new Application(self::$kernel))->find('yousign:zdd-message:validate'));
         $customBasePathFile = $kernel->getContainer()->getParameter('custom_path_file');
-        $this->serializedMessagesDir = $customBasePathFile.'/Messages';
+        $this->serializedMessagesDir = $customBasePathFile.'/Yousign/ZddMessageBundle/Tests/Fixtures/App/Messages';
 
         MessageConfig::$messagesToAssert = [
             DummyMessage::class,
