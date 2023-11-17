@@ -63,7 +63,7 @@ class GenerateZddMessageCommandTest extends KernelTestCase
         foreach ($messageConfig->getMessageToAssert() as $message) {
             $shortName = (new \ReflectionClass($message))->getShortName();
             $this->assertFileExists($baseDirectory.'/'.$shortName.'.txt');
-            $this->assertFileExists($baseDirectory.'/'.$shortName.'.not_nullable_properties.json');
+            $this->assertFileExists($baseDirectory.'/'.$shortName.'.properties.json');
         }
     }
 }

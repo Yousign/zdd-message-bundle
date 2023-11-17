@@ -2,19 +2,21 @@
 
 namespace Yousign\ZddMessageBundle\Assert;
 
+use Yousign\ZddMessageBundle\Factory\Property;
+use Yousign\ZddMessageBundle\Factory\PropertyList;
+
 /**
  * @internal
  */
 final class ZddMessageAssert
 {
     /**
-     * @param class-string<object>         $messageFqcn
-     * @param array<string|string, string> $notNullableProperties
+     * @param class-string<object> $messageFqcn
      */
     public static function assert(
         string $messageFqcn,
         string $serializedMessage,
-        array $notNullableProperties
+        PropertyList $propertyList
     ): void {
         // ✅ Assert message is unserializable
         $object = unserialize($serializedMessage);
@@ -24,31 +26,26 @@ final class ZddMessageAssert
         }
 
         $reflection = new \ReflectionClass($messageFqcn);
-        $properties = $reflection->getProperties();
+        $reflectionProperties = $reflection->getProperties();
 
         // ✅ Assert property type hint has not changed and new property have a default value
-        foreach ($properties as $property) {
+        foreach ($reflectionProperties as $reflectionProperty) {
             // ✅ Assert error "Typed property Message::$theProperty must not be accessed before initialization".
-            $property->getValue($object); // @phpstan-ignore-line :::  Call to method ReflectionProperty::getValue() on a separate line has no effect.
-        }
+            $reflectionProperty->getValue($object); // @phpstan-ignore-line :::  Call to method ReflectionProperty::getValue() on a separate line has no effect.
 
-        // ✅ Assert not nullable property has been removed
-        foreach ($properties as $property) {
-            if (\array_key_exists($property->getName(), $notNullableProperties)) {
-                self::assertProperty($property, $notNullableProperties);
-                unset($notNullableProperties[$property->getName()]);
+            // ✅ Assert property
+            if ($propertyList->has($reflectionProperty->getName())) {
+                self::assertProperty($reflectionProperty, $propertyList->get($reflectionProperty->getName()), $messageFqcn);
+                $propertyList->remove($reflectionProperty->getName());
             }
         }
 
-        if (0 !== \count($notNullableProperties)) {
-            throw new \LogicException(\sprintf('The properties "%s" in class "%s" seems to have been removed, make it nullable first, deploy it and then remove it 🔥', implode(', ', \array_flip($notNullableProperties)), $messageFqcn));
+        if (0 !== $propertyList->count()) {
+            throw new \LogicException(\sprintf('⚠️ The properties "%s" in class "%s" seems to have been removed', implode(', ', $propertyList->getPropertiesName()), $messageFqcn));
         }
     }
 
-    /**
-     * @param array<string, string> $notNullableProperties
-     */
-    private static function assertProperty(\ReflectionProperty $reflectionProperty, array $notNullableProperties): void
+    private static function assertProperty(\ReflectionProperty $reflectionProperty, Property $property, string $messageFqcn): void
     {
         if (null === $reflectionProperty->getType()) {
             throw new \LogicException(\sprintf('$reflectionProperty::getType cannot be null'));
@@ -56,8 +53,8 @@ final class ZddMessageAssert
         if (!$reflectionProperty->getType() instanceof \ReflectionNamedType) {
             throw new \LogicException(\sprintf('$reflectionProperty::getType must be an instance of ReflectionNamedType'));
         }
-        if ($reflectionProperty->getType()->getName() !== $notNullableProperties[$reflectionProperty->getName()]) {
-            throw new \LogicException(\sprintf('Property type mismatch between properties from $messageFqcn class and $notNullableProperties. Please verify your integration.'));
+        if ($reflectionProperty->getType()->getName() !== $property->type) {
+            throw new \LogicException(\sprintf('Error for property "%s" in class "%s", the type mismatch between the old and the new version of class. Please verify your integration.', $reflectionProperty->getName(), $messageFqcn));
         }
     }
 }

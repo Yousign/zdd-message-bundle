@@ -41,11 +41,10 @@ class ValidateZddMessageCommandTest extends KernelTestCase
     {
         mkdir($this->serializedMessagesDir);
         file_put_contents($this->serializedMessagesDir.'/DummyMessage.txt', serialize(new DummyMessage('Hi')));
-        file_put_contents($this->serializedMessagesDir.'/DummyMessage.not_nullable_properties.json', '{"content":"string"}');
+        file_put_contents($this->serializedMessagesDir.'/DummyMessage.properties.json', '[{"name":"content","type":"string"}]');
         $this->assertSerializedFilesExist($this->serializedMessagesDir);
 
         $this->command->execute([]);
-
         $this->command->assertCommandIsSuccessful();
 
         $expectedResult = <<<EOF
@@ -80,11 +79,20 @@ class ValidateZddMessageCommandTest extends KernelTestCase
 
     public function testThatCommandFailsWhenMessageIsNotZddCompliant(): void
     {
-        [$serializedMessage, $notNullableProperties] = $this->getSerializedMessageAndNotNullablePropertiesForPreviousVersionOfDummyMessageWithNumberProperty();
-
+        $serializedMessage = $this->getSerializedMessageForPreviousVersionOfDummyMessageWithNumberProperty();
+        $data = [
+            [
+                'name' => 'content',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'number',
+                'type' => 'int',
+            ],
+        ];
         mkdir($this->serializedMessagesDir);
         file_put_contents($this->serializedMessagesDir.'/DummyMessage.txt', $serializedMessage);
-        file_put_contents($this->serializedMessagesDir.'/DummyMessage.not_nullable_properties.json', json_encode($notNullableProperties));
+        file_put_contents($this->serializedMessagesDir.'/DummyMessage.properties.json', json_encode($data));
         $this->assertSerializedFilesExist($this->serializedMessagesDir);
 
         $this->command->execute([]);
@@ -103,17 +111,12 @@ class ValidateZddMessageCommandTest extends KernelTestCase
         $this->assertSame(trim($expectedResult), trim($this->command->getDisplay()));
     }
 
-    private function getSerializedMessageAndNotNullablePropertiesForPreviousVersionOfDummyMessageWithNumberProperty(): array
+    private function getSerializedMessageForPreviousVersionOfDummyMessageWithNumberProperty(): string
     {
-        return [
+        return
             <<<TXT
             O:65:"Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage":1:{s:74:" Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage content";s:11:"Hello world";}
-            TXT,
-            [
-                'content' => 'string',
-                'number' => 'int',
-            ],
-        ];
+            TXT;
     }
 
     private function assertSerializedFilesExist(string $baseDirectory): void
@@ -123,7 +126,7 @@ class ValidateZddMessageCommandTest extends KernelTestCase
         foreach ($messageConfig->getMessageToAssert() as $message) {
             $shortName = (new \ReflectionClass($message))->getShortName();
             $this->assertFileExists($baseDirectory.'/'.$shortName.'.txt');
-            $this->assertFileExists($baseDirectory.'/'.$shortName.'.not_nullable_properties.json');
+            $this->assertFileExists($baseDirectory.'/'.$shortName.'.properties.json');
         }
     }
 }

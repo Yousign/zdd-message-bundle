@@ -44,7 +44,7 @@ final class ValidateZddMessageCommand extends Command
             $messageToAssert = $this->zddMessageFilesystem->read($messageFqcn);
 
             try {
-                ZddMessageAssert::assert($messageFqcn, $messageToAssert->serializedMessage(), $messageToAssert->notNullableProperties());
+                ZddMessageAssert::assert($messageFqcn, $messageToAssert->serializedMessage(), $messageToAssert->propertyList());
 
                 $table->addRow([$key + 1, $messageFqcn, 'Yes ✅']);
             } catch (\Throwable $e) {
