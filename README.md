@@ -6,11 +6,11 @@ A Symfony Bundle to use when you want to assert that messages used with Message 
 ### Installation
 You can easily install Zdd Message bundle by composer
 ```
-$ composer require --dev yousign/zdd-message-bundle
+$ composer require yousign/zdd-message-bundle
 ```
 Then, bundle should be registered. Just verify that `config\bundles.php` is containing :
 ```php
-Yousign\ZddMessageBundle\ZddMessageBundle::class => ['dev' => true, 'test' => true],
+Yousign\ZddMessageBundle\ZddMessageBundle::class => ['all' => true],
 ```
 
 ### Configuration
