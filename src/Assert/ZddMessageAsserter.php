@@ -2,20 +2,20 @@
 
 namespace Yousign\ZddMessageBundle\Assert;
 
-use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use Yousign\ZddMessageBundle\Factory\Property;
 use Yousign\ZddMessageBundle\Factory\PropertyList;
+use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
 
 /**
  * @internal
  */
 final class ZddMessageAsserter
 {
-    private ?SerializerInterface $messengerSerializer;
+    private SerializerInterface $serializer;
 
-    public function __construct(SerializerInterface $messengerSerialize = null)
+    public function __construct(SerializerInterface $serialize)
     {
-        $this->messengerSerializer = $messengerSerialize;
+        $this->serializer = $serialize;
     }
 
     /**
@@ -27,16 +27,7 @@ final class ZddMessageAsserter
         PropertyList $propertyList
     ): void {
         // ✅ Assert message is unserializable
-        if ($this->messengerSerializer) {
-            $encodedEnvelope = \json_decode($serializedMessage, true, 512, JSON_THROW_ON_ERROR);
-            if (!\is_array($encodedEnvelope)) {
-                throw new \LogicException(\sprintf('Unable to decode serialized message to an array : %s', $serializedMessage));
-            }
-            $decodedEnvelope = $this->messengerSerializer->decode($encodedEnvelope);
-            $objectBefore = $decodedEnvelope->getMessage();
-        } else {
-            $objectBefore = unserialize($serializedMessage);
-        }
+        $objectBefore = $this->serializer->deserialize($serializedMessage);
 
         if (!$objectBefore instanceof $messageFqcn) {
             throw new \LogicException(\sprintf('Class mismatch between $messageFqcn: "%s" and $serializedMessage: "%s". Please verify your integration.', $messageFqcn, $serializedMessage));

@@ -7,11 +7,11 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use Yousign\ZddMessageBundle\Assert\ZddMessageAsserter;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 use Yousign\ZddMessageBundle\Factory\ZddMessageFactory;
 use Yousign\ZddMessageBundle\Filesystem\ZddMessageFilesystem;
+use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
 
 #[AsCommand(name: 'yousign:zdd-message:validate', description: 'Validate the serialized version of managed messages with the current version.')]
 final class ValidateZddMessageCommand extends Command
@@ -20,13 +20,13 @@ final class ValidateZddMessageCommand extends Command
     private ZddMessageFilesystem $zddMessageFilesystem;
     private ZddMessageAsserter $zddMessageAsserter;
 
-    public function __construct(private readonly string $zddMessagePath, private readonly ZddMessageConfigInterface $zddMessageConfig, ?SerializerInterface $messengerSerializer)
+    public function __construct(private readonly string $zddMessagePath, private readonly ZddMessageConfigInterface $zddMessageConfig, SerializerInterface $serializer)
     {
         parent::__construct();
 
-        $this->zddMessageFactory = new ZddMessageFactory($zddMessageConfig);
+        $this->zddMessageFactory = new ZddMessageFactory($zddMessageConfig, $serializer);
         $this->zddMessageFilesystem = new ZddMessageFilesystem($this->zddMessagePath);
-        $this->zddMessageAsserter = new ZddMessageAsserter($messengerSerializer);
+        $this->zddMessageAsserter = new ZddMessageAsserter($serializer);
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int

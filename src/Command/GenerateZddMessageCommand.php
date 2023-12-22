@@ -7,10 +7,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 use Yousign\ZddMessageBundle\Factory\ZddMessageFactory;
 use Yousign\ZddMessageBundle\Filesystem\ZddMessageFilesystem;
+use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
 
 #[AsCommand(name: 'yousign:zdd-message:generate', description: 'Generate serialized version of managed messages to validate them afterwards.')]
 final class GenerateZddMessageCommand extends Command
@@ -18,11 +18,11 @@ final class GenerateZddMessageCommand extends Command
     private ZddMessageFactory $zddMessageFactory;
     private ZddMessageFilesystem $zddMessageFilesystem;
 
-    public function __construct(private readonly string $zddMessagePath, private readonly ZddMessageConfigInterface $zddMessageConfig, ?SerializerInterface $messengerSerializer)
+    public function __construct(private readonly string $zddMessagePath, private readonly ZddMessageConfigInterface $zddMessageConfig, SerializerInterface $serializer)
     {
         parent::__construct();
 
-        $this->zddMessageFactory = new ZddMessageFactory($zddMessageConfig, $messengerSerializer);
+        $this->zddMessageFactory = new ZddMessageFactory($zddMessageConfig, $serializer);
         $this->zddMessageFilesystem = new ZddMessageFilesystem($this->zddMessagePath);
     }
 

@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Yousign\ZddMessageBundle\Factory;
 
-use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
 
 /**
  * @internal
@@ -14,12 +13,12 @@ use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 final class ZddMessageFactory
 {
     private ZddPropertyExtractor $propertyExtractor;
-    private ?SerializerInterface $messengerSerializer;
+    private SerializerInterface $serializer;
 
-    public function __construct(private readonly ZddMessageConfigInterface $config, SerializerInterface $messengerSerializer = null)
+    public function __construct(private readonly ZddMessageConfigInterface $config, SerializerInterface $serializer)
     {
         $this->propertyExtractor = new ZddPropertyExtractor($this->config);
-        $this->messengerSerializer = $messengerSerializer;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -34,13 +33,9 @@ final class ZddMessageFactory
             $this->forcePropertyValue($message, $property->name, $property->value);
         }
 
-        $serializedMessage = null;
-        if ($this->messengerSerializer) {
-            $encodedEnvelope = $this->messengerSerializer->encode(Envelope::wrap($message));
-            $serializedMessage = \json_encode($encodedEnvelope, JSON_THROW_ON_ERROR);
-        }
+        $serializedMessage = $this->serializer->serialize($message);
 
-        return new ZddMessage($className, $serializedMessage ?? serialize($message), $propertyList, $message);
+        return new ZddMessage($className, $serializedMessage, $propertyList, $message);
     }
 
     private function forcePropertyValue(object $object, string $property, mixed $value): void

@@ -7,6 +7,7 @@ use App\WithoutValue\WithoutValueConfig;
 use PHPUnit\Framework\TestCase;
 use Yousign\ZddMessageBundle\Exceptions\MissingValueForTypeException;
 use Yousign\ZddMessageBundle\Factory\ZddMessageFactory;
+use Yousign\ZddMessageBundle\Serializer\ZddMessagePhpSerializer;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty;
@@ -18,7 +19,7 @@ class ZddMessageFactoryTest extends TestCase
 
     public function setUp(): void
     {
-        $this->zddMessageFactory = new ZddMessageFactory(new MessageConfig());
+        $this->zddMessageFactory = new ZddMessageFactory(new MessageConfig(), new ZddMessagePhpSerializer());
     }
 
     public function testItGeneratesSerializedMessageWithNullAndNotNullableProperties(): void
@@ -72,7 +73,7 @@ class ZddMessageFactoryTest extends TestCase
 
     public function testItThrownAMissingValueForTypeException(): void
     {
-        $factory = new ZddMessageFactory(new WithoutValueConfig());
+        $factory = new ZddMessageFactory(new WithoutValueConfig(), new ZddMessagePhpSerializer());
 
         $this->expectException(MissingValueForTypeException::class);
         $this->expectExceptionMessage('Missing value for property type "Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage" maybe you forgot to add it in "App\WithoutValue\WithoutValueConfig"');
