@@ -11,9 +11,9 @@ use Yousign\ZddMessageBundle\Factory\PropertyList;
  */
 final class ZddMessageAsserter
 {
-    private SerializerInterface $messengerSerializer;
+    private ?SerializerInterface $messengerSerializer;
 
-    public function __construct(?SerializerInterface $messengerSerialize = null)
+    public function __construct(SerializerInterface $messengerSerialize = null)
     {
         $this->messengerSerializer = $messengerSerialize;
     }
@@ -22,14 +22,16 @@ final class ZddMessageAsserter
      * @param class-string<object> $messageFqcn
      */
     public function assert(
-        string       $messageFqcn,
-        string       $serializedMessage,
+        string $messageFqcn,
+        string $serializedMessage,
         PropertyList $propertyList
-    ): void
-    {
+    ): void {
         // ✅ Assert message is unserializable
         if ($this->messengerSerializer) {
             $encodedEnvelope = \json_decode($serializedMessage, true, 512, JSON_THROW_ON_ERROR);
+            if (!\is_array($encodedEnvelope)) {
+                throw new \LogicException(\sprintf('Unable to decode serialized message to an array : %s', $serializedMessage));
+            }
             $decodedEnvelope = $this->messengerSerializer->decode($encodedEnvelope);
             $objectBefore = $decodedEnvelope->getMessage();
         } else {

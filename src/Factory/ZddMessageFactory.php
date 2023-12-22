@@ -35,9 +35,9 @@ final class ZddMessageFactory
         }
 
         $serializedMessage = null;
-        if($this->messengerSerializer){
+        if ($this->messengerSerializer) {
             $encodedEnvelope = $this->messengerSerializer->encode(Envelope::wrap($message));
-            $serializedMessage = \json_encode($encodedEnvelope);
+            $serializedMessage = \json_encode($encodedEnvelope, JSON_THROW_ON_ERROR);
         }
 
         return new ZddMessage($className, $serializedMessage ?? serialize($message), $propertyList, $message);

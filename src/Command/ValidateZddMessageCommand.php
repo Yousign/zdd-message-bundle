@@ -8,7 +8,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
-use Yousign\ZddMessageBundle\Assert\ZddMessageAssert;
 use Yousign\ZddMessageBundle\Assert\ZddMessageAsserter;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 use Yousign\ZddMessageBundle\Factory\ZddMessageFactory;
