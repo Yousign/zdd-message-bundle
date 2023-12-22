@@ -76,6 +76,7 @@ Default : `serialize()` php method.
 zdd_message:
     # ...
     messenger_serializer: 'messenger.transport.symfony_serializer'
+```
 
 Option to write a log message if an asynchronous message has been sent (using symfony messenger) and is not present in your configuration.
 
