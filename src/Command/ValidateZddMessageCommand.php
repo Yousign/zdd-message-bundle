@@ -7,7 +7,9 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use Yousign\ZddMessageBundle\Assert\ZddMessageAssert;
+use Yousign\ZddMessageBundle\Assert\ZddMessageAsserter;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 use Yousign\ZddMessageBundle\Factory\ZddMessageFactory;
 use Yousign\ZddMessageBundle\Filesystem\ZddMessageFilesystem;
@@ -17,13 +19,15 @@ final class ValidateZddMessageCommand extends Command
 {
     private ZddMessageFactory $zddMessageFactory;
     private ZddMessageFilesystem $zddMessageFilesystem;
+    private ZddMessageAsserter $zddMessageAsserter;
 
-    public function __construct(private readonly string $zddMessagePath, private readonly ZddMessageConfigInterface $zddMessageConfig)
+    public function __construct(private readonly string $zddMessagePath, private readonly ZddMessageConfigInterface $zddMessageConfig, ?SerializerInterface $messengerSerializer)
     {
         parent::__construct();
 
         $this->zddMessageFactory = new ZddMessageFactory($zddMessageConfig);
         $this->zddMessageFilesystem = new ZddMessageFilesystem($this->zddMessagePath);
+        $this->zddMessageAsserter = new ZddMessageAsserter($messengerSerializer);
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
@@ -44,7 +48,7 @@ final class ValidateZddMessageCommand extends Command
             $messageToAssert = $this->zddMessageFilesystem->read($messageFqcn);
 
             try {
-                ZddMessageAssert::assert($messageFqcn, $messageToAssert->serializedMessage(), $messageToAssert->propertyList());
+                $this->zddMessageAsserter->assert($messageFqcn, $messageToAssert->serializedMessage(), $messageToAssert->propertyList());
 
                 $table->addRow([$key + 1, $messageFqcn, 'Yes ✅']);
             } catch (\Throwable $e) {

@@ -35,6 +35,7 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
         }
 
         $zddMessageConfig = $ids[0];
+        $serializerService = $container->getParameter('yousign.zdd.message.messenger_serializer') ? new Reference($container->getParameter('yousign.zdd.message.messenger_serializer')) : null;
         $container
             ->setDefinition(
                 'yousign_generate_zdd_message_command',
@@ -44,8 +45,8 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
             ->setArguments([
                 $container->getParameter('yousign.zdd.message.serialized_messages_dir'),
                 new Reference($zddMessageConfig),
-            ])
-        ;
+                $serializerService,
+            ]);
 
         $container
             ->setDefinition(
@@ -56,8 +57,8 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
             ->setArguments([
                 $container->getParameter('yousign.zdd.message.serialized_messages_dir'),
                 new Reference($zddMessageConfig),
-            ])
-        ;
+                $serializerService,
+            ]);
 
         $container
             ->setDefinition(
@@ -67,8 +68,7 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
             ->addTag('console.command')
             ->setArguments([
                 new Reference($zddMessageConfig),
-            ])
-        ;
+            ]);
 
         if (!class_exists(WorkerMessageReceivedEvent::class)) {
             return;
@@ -85,8 +85,7 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
                     new Reference('logger'),
                     new Reference($zddMessageConfig),
                     $container->getParameter('yousign.zdd.message.log_untracked_messages.messenger.level'),
-                ])
-            ;
+                ]);
         }
     }
 }

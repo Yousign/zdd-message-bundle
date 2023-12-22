@@ -7,6 +7,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 use Yousign\ZddMessageBundle\Factory\ZddMessageFactory;
 use Yousign\ZddMessageBundle\Filesystem\ZddMessageFilesystem;
@@ -17,11 +18,11 @@ final class GenerateZddMessageCommand extends Command
     private ZddMessageFactory $zddMessageFactory;
     private ZddMessageFilesystem $zddMessageFilesystem;
 
-    public function __construct(private readonly string $zddMessagePath, private readonly ZddMessageConfigInterface $zddMessageConfig)
+    public function __construct(private readonly string $zddMessagePath, private readonly ZddMessageConfigInterface $zddMessageConfig, ?SerializerInterface $messengerSerializer)
     {
         parent::__construct();
 
-        $this->zddMessageFactory = new ZddMessageFactory($zddMessageConfig);
+        $this->zddMessageFactory = new ZddMessageFactory($zddMessageConfig, $messengerSerializer);
         $this->zddMessageFilesystem = new ZddMessageFilesystem($this->zddMessagePath);
     }
 

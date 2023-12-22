@@ -68,6 +68,15 @@ Then, you should register it in the configuration (`config/packages/zdd_message.
 
 #### Optional configuration (for symfony messenger)
 
+Option to use a custom serializer (must implement \Symfony\Component\Messenger\Transport\Serialization\SerializerInterface).  
+Default : `serialize()` php method.
+
+```yaml
+# config/packages/zdd_message.yaml
+zdd_message:
+    # ...
+    messenger_serializer: 'messenger.transport.symfony_serializer'
+
 Option to write a log message if an asynchronous message has been sent (using symfony messenger) and is not present in your configuration.
 
 ```yaml
