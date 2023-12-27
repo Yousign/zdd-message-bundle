@@ -112,6 +112,11 @@ $ composer install
 $ make all
 ```
 
+If you want to use your local fork to develop in your projects, you can use the link command to replace the vendor installation by your local version.
+```bash
+$ ./link /home/yousign/dev/my-project
+```
+
 ## Authors
 - Smaine Milianni - [ismail1432](https://github.com/ismail1432) - <smaine(dot)milianni@gmail(dot)com>
 - Simon Mutricy - [Inkod](https://github.com/Inkod) - <ink0d@pm(dot)me>
