@@ -7,7 +7,9 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Yousign\ZddMessageBundle\Serializer\ZddMessageMessengerSerializer;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
 
@@ -37,10 +39,15 @@ class ValidateZddMessageCommandTest extends KernelTestCase
         MessageConfig::reset();
     }
 
+    public function getSerializer(): ZddMessageMessengerSerializer
+    {
+        return new ZddMessageMessengerSerializer(new PhpSerializer());
+    }
+
     public function testThatCommandIsSuccessful(): void
     {
         mkdir($this->serializedMessagesDir);
-        file_put_contents($this->serializedMessagesDir.'/DummyMessage.txt', serialize(new DummyMessage('Hi')));
+        file_put_contents($this->serializedMessagesDir.'/DummyMessage.txt', $this->getSerializer()->serialize(new DummyMessage('Hi')));
         file_put_contents($this->serializedMessagesDir.'/DummyMessage.properties.json', '[{"name":"content","type":"string"}]');
         $this->assertSerializedFilesExist($this->serializedMessagesDir);
 

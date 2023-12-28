@@ -13,9 +13,9 @@ final class ZddMessageAsserter
 {
     private SerializerInterface $serializer;
 
-    public function __construct(SerializerInterface $serialize)
+    public function __construct(SerializerInterface $serializer)
     {
-        $this->serializer = $serialize;
+        $this->serializer = $serializer;
     }
 
     /**

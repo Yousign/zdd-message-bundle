@@ -35,11 +35,6 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
         }
 
         $zddMessageConfig = $ids[0];
-        $serializer = $container->getParameter('yousign.zdd.message.serializer');
-        if (!\is_string($serializer)) {
-            throw new \LogicException('Parameter yousign.zdd.message.serializer must be an id of service.');
-        }
-
         $container
             ->setDefinition(
                 'yousign_generate_zdd_message_command',
@@ -49,7 +44,7 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
             ->setArguments([
                 $container->getParameter('yousign.zdd.message.serialized_messages_dir'),
                 new Reference($zddMessageConfig),
-                new Reference($serializer),
+                new Reference('yousign.zdd.message.serializer'),
             ])
         ;
 
@@ -62,7 +57,7 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
             ->setArguments([
                 $container->getParameter('yousign.zdd.message.serialized_messages_dir'),
                 new Reference($zddMessageConfig),
-                new Reference($serializer),
+                new Reference('yousign.zdd.message.serializer'),
             ])
         ;
 

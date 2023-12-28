@@ -5,7 +5,7 @@ phpcs: ## Run PHP CS Fixer
 	./vendor/bin/php-cs-fixer fix --no-interaction -v
 
 test: ## Run code tests
-	./vendor/bin/phpunit --testdox
+	./vendor/bin/phpunit
 
 phpstan:
 	./vendor/bin/phpstan analyse src --level=9

@@ -7,27 +7,31 @@ use App\WithoutValue\WithoutValueConfig;
 use PHPUnit\Framework\TestCase;
 use Yousign\ZddMessageBundle\Exceptions\MissingValueForTypeException;
 use Yousign\ZddMessageBundle\Factory\ZddMessageFactory;
-use Yousign\ZddMessageBundle\Serializer\ZddMessagePhpSerializer;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor;
+use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale;
+use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status;
 
 class ZddMessageFactoryTest extends TestCase
 {
+    use SerializerTrait;
+
     private readonly ZddMessageFactory $zddMessageFactory;
 
     public function setUp(): void
     {
-        $this->zddMessageFactory = new ZddMessageFactory(new MessageConfig(), new ZddMessagePhpSerializer());
+        $this->zddMessageFactory = new ZddMessageFactory(new MessageConfig(), $this->getSerializer());
     }
 
     public function testItGeneratesSerializedMessageWithNullAndNotNullableProperties(): void
     {
         $zddMessage = $this->zddMessageFactory->create(DummyMessageWithNullableNumberProperty::class);
-        self::assertSame(<<<TXT
-            O:91:"Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty":2:{s:100:"\x00Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty\x00content";s:12:"Hello World!";s:99:"\x00Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty\x00number";N;}
-            TXT, $zddMessage->serializedMessage());
+        self::assertSame(
+            $this->getSerializer()->serialize(new DummyMessageWithNullableNumberProperty('Hello World!')),
+            $zddMessage->serializedMessage()
+        );
 
         self::assertEquals(2, $zddMessage->propertyList()->count());
         self::assertTrue($zddMessage->propertyList()->has('content'));
@@ -43,9 +47,10 @@ class ZddMessageFactoryTest extends TestCase
     public function testItGeneratesSerializedMessageForDummyMessageWithPrivateConstructor(): void
     {
         $zddMessage = $this->zddMessageFactory->create(DummyMessageWithPrivateConstructor::class);
-        self::assertSame(<<<TXT
-            O:87:"Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor":1:{s:96:"\x00Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor\x00content";s:12:"Hello World!";}
-            TXT, $zddMessage->serializedMessage());
+        self::assertSame(
+            $this->getSerializer()->serialize(DummyMessageWithPrivateConstructor::create('Hello World!')),
+            $zddMessage->serializedMessage()
+        );
 
         self::assertEquals(1, $zddMessage->propertyList()->count());
         self::assertTrue($zddMessage->propertyList()->has('content'));
@@ -58,22 +63,29 @@ class ZddMessageFactoryTest extends TestCase
     {
         $zddMessage = $this->zddMessageFactory->create(DummyMessageWithAllManagedTypes::class);
 
-        self::assertSame(<<<TXT
-            O:84:"Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes":6:{s:93:"\x00Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes\x00content";s:12:"Hello World!";s:91:"\x00Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes\x00count";i:42;s:92:"\x00Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes\x00enable";b:1;s:90:"\x00Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes\x00data";a:2:{i:0;s:3:"PHP";i:1;s:11:"For The Win";}s:92:"\x00Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes\x00locale";O:65:"Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale":1:{s:73:"\x00Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale\x00locale";s:2:"fr";}s:92:"\x00Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes\x00status";E:71:"Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status:DRAFT";}
-            TXT, $zddMessage->serializedMessage());
+        self::assertSame(
+            $this->getSerializer()->serialize(new DummyMessageWithAllManagedTypes(
+                'Hello World!',
+                42,
+                true,
+                ['PHP', 'For The Win'],
+                new Locale('fr'),
+                Status::DRAFT
+            )),
+            $zddMessage->serializedMessage());
 
         self::assertEquals(6, $zddMessage->propertyList()->count());
         self::assertSame('string', $zddMessage->propertyList()->get('content')->type);
         self::assertSame('int', $zddMessage->propertyList()->get('count')->type);
         self::assertSame('bool', $zddMessage->propertyList()->get('enable')->type);
         self::assertSame('array', $zddMessage->propertyList()->get('data')->type);
-        self::assertSame('Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale', $zddMessage->propertyList()->get('locale')->type);
-        self::assertSame('Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status', $zddMessage->propertyList()->get('status')->type);
+        self::assertSame(Locale::class, $zddMessage->propertyList()->get('locale')->type);
+        self::assertSame(Status::class, $zddMessage->propertyList()->get('status')->type);
     }
 
     public function testItThrownAMissingValueForTypeException(): void
     {
-        $factory = new ZddMessageFactory(new WithoutValueConfig(), new ZddMessagePhpSerializer());
+        $factory = new ZddMessageFactory(new WithoutValueConfig(), $this->getSerializer());
 
         $this->expectException(MissingValueForTypeException::class);
         $this->expectExceptionMessage('Missing value for property type "Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage" maybe you forgot to add it in "App\WithoutValue\WithoutValueConfig"');
