@@ -7,11 +7,8 @@ use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface as M
 
 class ZddMessageMessengerSerializer implements SerializerInterface
 {
-    private MessengerSerializerInterface $serializer;
-
-    public function __construct(MessengerSerializerInterface $serializer)
+    public function __construct(private readonly MessengerSerializerInterface $serializer)
     {
-        $this->serializer = $serializer;
     }
 
     public function serialize(mixed $data): string
