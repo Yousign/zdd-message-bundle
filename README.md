@@ -66,7 +66,9 @@ Then, you should register it in the configuration (`config/packages/zdd_message.
     serialized_messages_dir: 'var/serialized_messages' # The directory where the serialized messages will be stored (default: '%kernel.logs_dir%')
 ```
 
-#### Use a custom serializer
+#### Optional configuration
+
+**Use a custom serializer**
 
 Option to use different serializer.
 Possible options :
@@ -79,6 +81,8 @@ Possible options :
   zdd_message:
     serializer: '<your-service-id>'
 ```
+
+**Detect messages not tracked**
 
 Option to write a log message if an asynchronous message has been sent (using symfony messenger) and is not present in your configuration.
 

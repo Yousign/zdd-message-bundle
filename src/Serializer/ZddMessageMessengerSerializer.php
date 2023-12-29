@@ -20,16 +20,11 @@ class ZddMessageMessengerSerializer implements SerializerInterface
             throw new \InvalidArgumentException(sprintf('Object expected, %s provided', \gettype($data)));
         }
 
-        return \json_encode($this->serializer->encode(Envelope::wrap($data)), JSON_THROW_ON_ERROR);
+        return $this->serializer->encode(Envelope::wrap($data))['body'];
     }
 
-    public function deserialize(string $data): mixed
+    public function deserialize(string $data): object
     {
-        $encodedEnvelope = \json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-        if (!\is_array($encodedEnvelope)) {
-            throw new \InvalidArgumentException(sprintf('Array expected, %s provided', \gettype($encodedEnvelope)));
-        }
-
-        return $this->serializer->decode($encodedEnvelope)->getMessage();
+        return $this->serializer->decode(['body' => $data])->getMessage();
     }
 }

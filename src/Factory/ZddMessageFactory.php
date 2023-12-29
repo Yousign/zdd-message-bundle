@@ -13,12 +13,10 @@ use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
 final class ZddMessageFactory
 {
     private ZddPropertyExtractor $propertyExtractor;
-    private SerializerInterface $serializer;
 
-    public function __construct(private readonly ZddMessageConfigInterface $config, SerializerInterface $serializer)
+    public function __construct(ZddMessageConfigInterface $config, private readonly SerializerInterface $serializer)
     {
-        $this->propertyExtractor = new ZddPropertyExtractor($this->config);
-        $this->serializer = $serializer;
+        $this->propertyExtractor = new ZddPropertyExtractor($config);
     }
 
     /**
