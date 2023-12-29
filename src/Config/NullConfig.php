@@ -1,8 +1,6 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config;
-
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
+namespace Yousign\ZddMessageBundle\Config;
 
 class NullConfig implements ZddMessageConfigInterface
 {
