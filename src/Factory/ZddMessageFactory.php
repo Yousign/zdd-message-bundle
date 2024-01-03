@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yousign\ZddMessageBundle\Factory;
 
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
 
 /**
  * @internal
@@ -13,9 +14,9 @@ final class ZddMessageFactory
 {
     private ZddPropertyExtractor $propertyExtractor;
 
-    public function __construct(private readonly ZddMessageConfigInterface $config)
+    public function __construct(ZddMessageConfigInterface $config, private readonly SerializerInterface $serializer)
     {
-        $this->propertyExtractor = new ZddPropertyExtractor($this->config);
+        $this->propertyExtractor = new ZddPropertyExtractor($config);
     }
 
     /**
@@ -30,7 +31,9 @@ final class ZddMessageFactory
             $this->forcePropertyValue($message, $property->name, $property->value);
         }
 
-        return new ZddMessage($className, serialize($message), $propertyList, $message);
+        $serializedMessage = $this->serializer->serialize($message);
+
+        return new ZddMessage($className, $serializedMessage, $propertyList, $message);
     }
 
     private function forcePropertyValue(object $object, string $property, mixed $value): void

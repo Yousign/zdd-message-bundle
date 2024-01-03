@@ -44,6 +44,7 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
             ->setArguments([
                 $container->getParameter('yousign.zdd.message.serialized_messages_dir'),
                 new Reference($zddMessageConfig),
+                new Reference('yousign.zdd.message.serializer'),
             ])
         ;
 
@@ -56,6 +57,7 @@ final class ZddMessageCompilerPass implements CompilerPassInterface
             ->setArguments([
                 $container->getParameter('yousign.zdd.message.serialized_messages_dir'),
                 new Reference($zddMessageConfig),
+                new Reference('yousign.zdd.message.serializer'),
             ])
         ;
 

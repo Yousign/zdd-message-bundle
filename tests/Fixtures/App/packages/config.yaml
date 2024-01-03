@@ -1,6 +1,9 @@
 framework:
   secret: ThisIsSecret
   test: true
+  messenger:
+      transports:
+          sync: "in-memory://"
 
 parameters:
   custom_path_file: '%kernel.project_dir%/tmp/serialized_messages_directory'

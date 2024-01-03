@@ -4,24 +4,29 @@ namespace Yousign\ZddMessageBundle\Assert;
 
 use Yousign\ZddMessageBundle\Factory\Property;
 use Yousign\ZddMessageBundle\Factory\PropertyList;
+use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
 
 /**
  * @internal
  */
-final class ZddMessageAssert
+final class ZddMessageAsserter
 {
+    public function __construct(private readonly SerializerInterface $serializer)
+    {
+    }
+
     /**
      * @param class-string<object> $messageFqcn
      */
-    public static function assert(
+    public function assert(
         string $messageFqcn,
         string $serializedMessage,
         PropertyList $propertyList
     ): void {
         // ✅ Assert message is unserializable
-        $object = unserialize($serializedMessage);
+        $objectBefore = $this->serializer->deserialize($serializedMessage);
 
-        if (!$object instanceof $messageFqcn) {
+        if (!$objectBefore instanceof $messageFqcn) {
             throw new \LogicException(\sprintf('Class mismatch between $messageFqcn: "%s" and $serializedMessage: "%s". Please verify your integration.', $messageFqcn, $serializedMessage));
         }
 
@@ -31,7 +36,7 @@ final class ZddMessageAssert
         // ✅ Assert property type hint has not changed and new property have a default value
         foreach ($reflectionProperties as $reflectionProperty) {
             // ✅ Assert error "Typed property Message::$theProperty must not be accessed before initialization".
-            $reflectionProperty->getValue($object); // @phpstan-ignore-line :::  Call to method ReflectionProperty::getValue() on a separate line has no effect.
+            $reflectionProperty->getValue($objectBefore); // @phpstan-ignore-line :::  Call to method ReflectionProperty::getValue() on a separate line has no effect.
 
             // ✅ Assert property
             if ($propertyList->has($reflectionProperty->getName())) {
