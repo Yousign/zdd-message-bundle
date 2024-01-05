@@ -17,11 +17,16 @@ class ZddMessageMessengerSerializer implements SerializerInterface
             throw new \InvalidArgumentException(sprintf('Object expected, %s provided', \gettype($data)));
         }
 
-        return $this->serializer->encode(Envelope::wrap($data))['body'];
+        return \json_encode($this->serializer->encode(Envelope::wrap($data)), \JSON_THROW_ON_ERROR);
     }
 
     public function deserialize(string $data): object
     {
-        return $this->serializer->decode(['body' => $data])->getMessage();
+        $dataArray = \json_decode($data, true, 512, \JSON_THROW_ON_ERROR);
+        if (!\is_array($dataArray)) {
+            throw new \InvalidArgumentException(sprintf('Array expected, %s provided', \gettype($data)));
+        }
+
+        return $this->serializer->decode($dataArray)->getMessage();
     }
 }
