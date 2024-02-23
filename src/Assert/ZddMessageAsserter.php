@@ -5,6 +5,7 @@ namespace Yousign\ZddMessageBundle\Assert;
 use Yousign\ZddMessageBundle\Factory\Property;
 use Yousign\ZddMessageBundle\Factory\PropertyList;
 use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
+use Yousign\ZddMessageBundle\Serializer\UnableToDeserializeException;
 
 /**
  * @internal
@@ -17,6 +18,8 @@ final class ZddMessageAsserter
 
     /**
      * @param class-string<object> $messageFqcn
+     *
+     * @throws UnableToDeserializeException
      */
     public function assert(
         string $messageFqcn,
