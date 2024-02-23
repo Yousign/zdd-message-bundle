@@ -6,7 +6,10 @@ namespace Yousign\ZddMessageBundle\Serializer;
 
 interface SerializerInterface
 {
-    public function serialize(mixed $data): string;
+    public function serialize(object $data): string;
 
-    public function deserialize(string $data): mixed;
+    /**
+     * @throws UnableToDeserializeException
+     */
+    public function deserialize(string $data): object;
 }

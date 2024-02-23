@@ -37,8 +37,9 @@ jobs:
     strategy:
       matrix:
         php-versions: ['8.1', '8.2', '8.3']
+        mode: ['high-deps', 'low-deps']
       fail-fast: false
-    name: PHP ${{ matrix.php-versions }} tests
+    name: PHP ${{ matrix.php-versions }} tests with ${{ matrix.mode }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -56,11 +57,11 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.composercache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-composer-
+          key: ${{ runner.os }}-composer-${{ matrix.mode }}-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-${{ matrix.mode }}-
 
-      - name: Install dependencies
-        run: composer install --prefer-dist
+      - name: Install dependencies with low-deps
+        run: composer update --prefer-dist $(if [ "${{ matrix.mode }}" = 'low-deps' ]; then echo '--prefer-lowest'; fi)
 
       - name: Run tests
         run: vendor/bin/phpunit

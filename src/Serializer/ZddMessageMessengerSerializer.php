@@ -3,6 +3,7 @@
 namespace Yousign\ZddMessageBundle\Serializer;
 
 use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface as MessengerSerializerInterface;
 
 class ZddMessageMessengerSerializer implements SerializerInterface
@@ -11,13 +12,11 @@ class ZddMessageMessengerSerializer implements SerializerInterface
     {
     }
 
-    public function serialize(mixed $data): string
+    public function serialize(object $data): string
     {
-        if (!\is_object($data)) {
-            throw new \InvalidArgumentException(sprintf('Object expected, %s provided', \gettype($data)));
-        }
+        $encodedEnvelope = $this->serializer->encode(Envelope::wrap($data));
 
-        return \json_encode($this->serializer->encode(Envelope::wrap($data)), \JSON_THROW_ON_ERROR);
+        return \json_encode($encodedEnvelope, \JSON_THROW_ON_ERROR);
     }
 
     public function deserialize(string $data): object
@@ -27,6 +26,15 @@ class ZddMessageMessengerSerializer implements SerializerInterface
             throw new \InvalidArgumentException(sprintf('Array expected, %s provided', \gettype($data)));
         }
 
-        return $this->serializer->decode($dataArray)->getMessage();
+        try {
+            $envelope = $this->serializer->decode($dataArray);
+            if (!$envelope instanceof Envelope) {
+                throw new \InvalidArgumentException(sprintf('%s expected, %s provided', Envelope::class, \gettype($data)));
+            }
+
+            return $envelope->getMessage();
+        } catch (MessageDecodingFailedException $e) {
+            throw new UnableToDeserializeException(previous: $e);
+        }
     }
 }

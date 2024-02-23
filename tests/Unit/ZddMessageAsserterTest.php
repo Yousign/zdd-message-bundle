@@ -7,6 +7,7 @@ use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
 use Yousign\ZddMessageBundle\Assert\ZddMessageAsserter;
 use Yousign\ZddMessageBundle\Factory\Property;
 use Yousign\ZddMessageBundle\Factory\PropertyList;
+use Yousign\ZddMessageBundle\Serializer\UnableToDeserializeException;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithWrongPropertyType;
@@ -49,7 +50,7 @@ class ZddMessageAsserterTest extends TestCase
 
         yield 'Number property has been switched to nullable' => [
             DummyMessageWithNullableNumberProperty::class,
-            $this->getSerializer()->serialize(new DummyMessageWithNullableNumberProperty('Hello world'), null),
+            $this->getSerializer()->serialize(new DummyMessageWithNullableNumberProperty('Hello world')),
             <<<JSON
             [
               {
@@ -143,11 +144,13 @@ class ZddMessageAsserterTest extends TestCase
         $sut = $this->getSut();
         try {
             $sut->assert(DummyMessage::class, $serializedMessage, new PropertyList());
-            $this->fail('This test should raised expected exception');
-        } catch (\Throwable $t) {
-            $this->assertInstanceOf(MessageDecodingFailedException::class, $t);
-            $this->assertStringContainsString(DummyMessage::class, $t->getMessage());
+        } catch (UnableToDeserializeException $e) {
+            $this->assertInstanceOf(MessageDecodingFailedException::class, $e->getPrevious());
+
+            return;
         }
+
+        $this->fail('This test should raised expected exception');
     }
 
     public function getSut(): ZddMessageAsserter
