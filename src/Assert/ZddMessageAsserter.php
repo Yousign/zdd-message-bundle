@@ -53,6 +53,10 @@ final class ZddMessageAsserter
         foreach ($reflectionClass->getProperties() as $reflectionProperty) {
             $value = $reflectionProperty->getValue($object);
 
+            if (null === $reflectionProperty->getType()) { // Same check as in ZddPropertyExtractor
+                continue;
+            }
+
             // ✅ Assert property
             foreach ($properties as $key => $p) {
                 if ($p->name === $reflectionProperty->getName()) {
@@ -65,9 +69,6 @@ final class ZddMessageAsserter
                 throw new \LogicException(sprintf('Unable to find %s property in ZddMessage properties', $reflectionProperty->getName()));
             }
 
-            if (null === $reflectionProperty->getType()) {
-                throw new \LogicException('$reflectionProperty::getType cannot be null');
-            }
             if (!$reflectionProperty->getType() instanceof \ReflectionNamedType) {
                 throw new \LogicException('$reflectionProperty::getType must be an instance of ReflectionNamedType');
             }

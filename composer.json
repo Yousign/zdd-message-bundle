@@ -17,7 +17,8 @@
         "symfony/browser-kit": "^6.2",
         "symfony/framework-bundle": "^6.2",
         "symfony/yaml": "^6.2",
-        "symfony/messenger": "^6.2"
+        "symfony/messenger": "^6.2",
+        "thecodingmachine/safe": "^2.5"
     },
     "autoload": {
         "psr-4": {

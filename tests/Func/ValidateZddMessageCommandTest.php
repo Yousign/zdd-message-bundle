@@ -8,14 +8,13 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Yousign\ZddMessageBundle\Factory\Property;
 use Yousign\ZddMessageBundle\Serializer\ZddMessageMessengerSerializer;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
 
 class ValidateZddMessageCommandTest extends KernelTestCase
 {
-    private CommandTester $command;
+    private CommandTester $generateCommand;
+    private CommandTester $validateCommand;
     private string $serializedMessagesDir;
 
     protected function setUp(): void
@@ -23,12 +22,9 @@ class ValidateZddMessageCommandTest extends KernelTestCase
         parent::setUp();
 
         $kernel = self::bootKernel();
-        $this->command = new CommandTester((new Application($kernel))->find('yousign:zdd-message:validate'));
+        $this->generateCommand = new CommandTester((new Application($kernel))->find('yousign:zdd-message:generate'));
+        $this->validateCommand = new CommandTester((new Application($kernel))->find('yousign:zdd-message:validate'));
         $this->serializedMessagesDir = __DIR__.'/../Fixtures/App/tmp/serialized_messages_directory';
-
-        MessageConfig::$messagesToAssert = [
-            DummyMessage::class => new DummyMessage('Hi'),
-        ];
     }
 
     protected function tearDown(): void
@@ -36,7 +32,6 @@ class ValidateZddMessageCommandTest extends KernelTestCase
         parent::tearDown();
 
         (new Filesystem())->remove($this->serializedMessagesDir);
-        MessageConfig::reset();
     }
 
     public function getSerializer(): ZddMessageMessengerSerializer
@@ -46,84 +41,81 @@ class ValidateZddMessageCommandTest extends KernelTestCase
 
     public function testThatCommandIsSuccessful(): void
     {
-        $baseDirectory = $this->serializedMessagesDir.'/Yousign/ZddMessageBundle/Tests/Fixtures/App/Messages';
+        $this->generateCommand->execute([]);
 
-        mkdir($baseDirectory, recursive: true);
-        file_put_contents($baseDirectory.'/DummyMessage.txt', $this->getSerializer()->serialize(new DummyMessage('Hi')));
-        file_put_contents($baseDirectory.'/DummyMessage.properties.json', '[{"name":"content","type":"string", "children":[]}]');
-        $this->assertSerializedFilesExist($baseDirectory);
-
-        $this->command->execute([]);
-        $this->command->assertCommandIsSuccessful();
+        $this->validateCommand->execute([]);
+        $this->validateCommand->assertCommandIsSuccessful();
 
         $expectedResult = <<<EOF
-         --- ------------------------------------------------------------------- ---------------- 
-          #   Message                                                             ZDD Compliant?  
-         --- ------------------------------------------------------------------- ---------------- 
-          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   Yes ✅          
-         --- ------------------------------------------------------------------- ----------------
+         --- --------------------------------------------------------------------------------------------- ---------------- 
+          #   Message                                                                                       ZDD Compliant?  
+         --- --------------------------------------------------------------------------------------------- ---------------- 
+          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage                             Yes ✅          
+          2   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty   Yes ✅          
+          3   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor       Yes ✅          
+          4   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithSafeDateTimeImmutable    Yes ✅          
+          5   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes          Yes ✅          
+          6   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Other\DummyMessage                       Yes ✅          
+         --- --------------------------------------------------------------------------------------------- ----------------
         EOF;
 
-        $this->assertSame(trim($expectedResult), trim($this->command->getDisplay()));
+        $this->assertSame(trim($expectedResult), trim($this->validateCommand->getDisplay()));
     }
 
     public function testThatCommandIsSuccessfulEvenIfTheSerializedMessageDoesNotExists(): void
     {
-        $baseDirectory = $this->serializedMessagesDir.'/Yousign/ZddMessageBundle/Tests/Fixtures/App/Messages';
-
-        $this->assertFileDoesNotExist($baseDirectory.'/DummyMessage.txt');
-
-        $this->command->execute([]);
-
-        $this->command->assertCommandIsSuccessful();
+        $this->validateCommand->execute([]);
+        $this->validateCommand->assertCommandIsSuccessful();
 
         $expectedResult = <<<EOF
-         --- ------------------------------------------------------------------- ---------------- 
-          #   Message                                                             ZDD Compliant?  
-         --- ------------------------------------------------------------------- ---------------- 
-          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   Yes ✅          
-         --- ------------------------------------------------------------------- ----------------
+         --- --------------------------------------------------------------------------------------------- ---------------- 
+          #   Message                                                                                       ZDD Compliant?  
+         --- --------------------------------------------------------------------------------------------- ---------------- 
+          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage                             Yes ✅          
+          2   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty   Yes ✅          
+          3   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor       Yes ✅          
+          4   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithSafeDateTimeImmutable    Yes ✅          
+          5   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes          Yes ✅          
+          6   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Other\DummyMessage                       Yes ✅          
+         --- --------------------------------------------------------------------------------------------- ----------------
         EOF;
 
-        $this->assertSame(trim($expectedResult), trim($this->command->getDisplay()));
+        $this->assertSame(trim($expectedResult), trim($this->validateCommand->getDisplay()));
     }
 
     public function testThatCommandFailsWhenMessageIsNotZddCompliant(): void
     {
         $baseDirectory = $this->serializedMessagesDir.'/Yousign/ZddMessageBundle/Tests/Fixtures/App/Messages';
-
         $serializedMessage = $this->getSerializedMessageForPreviousVersionOfDummyMessageWithNumberProperty();
-        $data = [
-            [
-                'name' => 'content',
-                'type' => 'string',
-                'children' => [],
-            ],
-            [
-                'name' => 'number',
-                'type' => 'int',
-                'children' => [],
-            ],
-        ];
-        mkdir($baseDirectory, recursive: true);
+
+        $this->generateCommand->execute([]);
+
         file_put_contents($baseDirectory.'/DummyMessage.txt', $serializedMessage);
-        file_put_contents($baseDirectory.'/DummyMessage.properties.json', json_encode($data));
-        $this->assertSerializedFilesExist($baseDirectory);
+        file_put_contents($baseDirectory.'/DummyMessage.properties.json', json_encode([
+            new Property('content', 'string', []),
+            new Property('number', 'int', []),
+        ]));
 
-        $this->command->execute([]);
+        $this->validateCommand->execute([]);
+        $this->validateCommand->execute([]);
 
-        self::assertEquals(Command::FAILURE, $this->command->getStatusCode());
+        self::assertEquals(Command::FAILURE, $this->validateCommand->getStatusCode());
         $expectedResult = <<<EOF
-         --- ------------------------------------------------------------------- ---------------- 
-          #   Message                                                             ZDD Compliant?  
-         --- ------------------------------------------------------------------- ---------------- 
-          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   No ❌           
-         --- ------------------------------------------------------------------- ---------------- 
+         --- --------------------------------------------------------------------------------------------- ---------------- 
+          #   Message                                                                                       ZDD Compliant?  
+         --- --------------------------------------------------------------------------------------------- ---------------- 
+          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage                             No ❌           
+          2   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty   Yes ✅          
+          3   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor       Yes ✅          
+          4   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithSafeDateTimeImmutable    Yes ✅          
+          5   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes          Yes ✅          
+          6   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Other\DummyMessage                       Yes ✅          
+         --- --------------------------------------------------------------------------------------------- ---------------- 
         
          ! [NOTE] 1 error(s) triggered.
         EOF;
 
-        $this->assertSame(trim($expectedResult), trim($this->command->getDisplay()));
+        $this->assertSame(trim($expectedResult), trim($this->validateCommand->getDisplay()));
     }
 
     private function getSerializedMessageForPreviousVersionOfDummyMessageWithNumberProperty(): string
@@ -132,16 +124,5 @@ class ValidateZddMessageCommandTest extends KernelTestCase
             <<<TXT
             O:65:"Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage":1:{s:74:" Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage content";s:11:"Hello world";}
             TXT;
-    }
-
-    private function assertSerializedFilesExist(string $baseDirectory): void
-    {
-        /** @var ZddMessageConfigInterface $messageConfig */
-        $messageConfig = self::$kernel->getContainer()->get(MessageConfig::class);
-        foreach ($messageConfig->getMessageToAssert() as $message) {
-            $shortName = (new \ReflectionClass($message))->getShortName();
-            $this->assertFileExists($baseDirectory.'/'.$shortName.'.txt');
-            $this->assertFileExists($baseDirectory.'/'.$shortName.'.properties.json');
-        }
     }
 }

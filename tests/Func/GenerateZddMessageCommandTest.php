@@ -49,8 +49,9 @@ class GenerateZddMessageCommandTest extends KernelTestCase
           1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage                            
           2   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty  
           3   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor      
-          4   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes         
-          5   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Other\DummyMessage                      
+          4   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithSafeDateTimeImmutable   
+          5   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes         
+          6   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Other\DummyMessage                      
          --- ---------------------------------------------------------------------------------------------  
         EOF;
 
