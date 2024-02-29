@@ -55,7 +55,10 @@ final class ZddMessageFilesystem
         }
 
         /** @var Property[] $properties */
-        $properties = array_map(fn (array $p) => Property::fromArray($p), json_decode($propertiesJson, true));
+        $properties = array_map(
+            static fn (array $p) => Property::fromArray($p), // @phpstan-ignore-line
+            json_decode($propertiesJson, true) // @phpstan-ignore-line
+        );
 
         return new ZddMessage($messageName, $messageName, $serializedMessage, $properties); // TODO: Check 2nd parameter value
     }

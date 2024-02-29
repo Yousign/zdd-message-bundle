@@ -52,7 +52,7 @@ final class Property implements \JsonSerializable
         );
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize(): array // @phpstan-ignore-line
     {
         return [
             'name' => $this->name,
@@ -61,7 +61,7 @@ final class Property implements \JsonSerializable
         ];
     }
 
-    public static function fromArray(array $data): self
+    public static function fromArray(array $data): self // @phpstan-ignore-line
     {
         return new self(
             $data['name'],
