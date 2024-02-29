@@ -6,7 +6,7 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface as MessengerSerializerInterface;
 
-class ZddMessageMessengerSerializer implements SerializerInterface
+class ZddMessageMessengerSerializer implements MessageSerializerInterface
 {
     public function __construct(private readonly MessengerSerializerInterface $serializer)
     {

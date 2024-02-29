@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yousign\ZddMessageBundle\Serializer;
 
-interface SerializerInterface
+interface MessageSerializerInterface
 {
     public function serialize(object $data): string;
 

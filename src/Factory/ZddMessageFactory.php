@@ -4,44 +4,26 @@ declare(strict_types=1);
 
 namespace Yousign\ZddMessageBundle\Factory;
 
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
-use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
+use Yousign\ZddMessageBundle\Serializer\MessageSerializerInterface;
 
 /**
  * @internal
  */
 final class ZddMessageFactory
 {
-    private ZddPropertyExtractor $propertyExtractor;
-
-    public function __construct(ZddMessageConfigInterface $config, private readonly SerializerInterface $serializer)
-    {
-        $this->propertyExtractor = new ZddPropertyExtractor($config);
+    public function __construct(
+        private readonly MessageSerializerInterface $serializer,
+        private readonly ZddPropertyExtractor $propertyExtractor,
+    ) {
     }
 
-    /**
-     * @param class-string $className
-     */
-    public function create(string $className): ZddMessage
+    public function create(string $messageName, object $message): ZddMessage
     {
-        $propertyList = $this->propertyExtractor->extractPropertiesFromClass($className);
-
-        $message = (new \ReflectionClass($className))->newInstanceWithoutConstructor();
-        foreach ($propertyList->getProperties() as $property) {
-            $this->forcePropertyValue($message, $property->name, $property->value);
-        }
-
-        $serializedMessage = $this->serializer->serialize($message);
-
-        return new ZddMessage($className, $serializedMessage, $propertyList, $message);
-    }
-
-    private function forcePropertyValue(object $object, string $property, mixed $value): void
-    {
-        $reflectionClass = new \ReflectionClass($object);
-        $reflectionProperty = $reflectionClass->getProperty($property);
-
-        $reflectionProperty->setAccessible(true);
-        $reflectionProperty->setValue($object, $value);
+        return new ZddMessage(
+            $messageName,
+            $message::class,
+            $this->serializer->serialize($message),
+            $this->propertyExtractor->extractProperties($message),
+        );
     }
 }

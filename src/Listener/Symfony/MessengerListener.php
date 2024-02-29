@@ -5,14 +5,16 @@ namespace Yousign\ZddMessageBundle\Listener\Symfony;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Yousign\ZddMessageBundle\Factory\ZddMessageCollection;
+use Yousign\ZddMessageBundle\Factory\ZddMessageFactory;
 
 final class MessengerListener implements EventSubscriberInterface
 {
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly ZddMessageConfigInterface $config,
-        private readonly string $logLevel = 'warning'
+        private readonly ZddMessageFactory $messageFactory,
+        private readonly ZddMessageCollection $zddMessageCollection,
+        private readonly string $logLevel = 'warning',
     ) {
     }
 
@@ -20,17 +22,27 @@ final class MessengerListener implements EventSubscriberInterface
     {
         try {
             $message = $event->getEnvelope()->getMessage();
+
             // In case of $message act like an envelope.
             if (method_exists($message, 'getMessage')) {
                 $message = $message->getMessage();
             }
 
-            if (is_object($message) && !in_array($class = get_class($message), $this->config->getMessageToAssert(), true)) {
+            if (!is_object($message)) {
+                return;
+            }
+
+            $zddMessage = $this->messageFactory->create(
+                $message::class,
+                $message,
+            );
+
+            if (!$this->zddMessageCollection->fingerprintExists($zddMessage->getFingerprint())) {
                 $this->logger->log(
                     $this->logLevel,
                     'Untracked {class} has been detected, add it in your configuration to ensure ZDD compliance.',
                     [
-                        'class' => $class,
+                        'class' => $message::class,
                     ],
                 );
             }

@@ -10,20 +10,19 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 use Yousign\ZddMessageBundle\Factory\ZddMessageFactory;
 use Yousign\ZddMessageBundle\Filesystem\ZddMessageFilesystem;
-use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
 
-#[AsCommand(name: 'yousign:zdd-message:generate', description: 'Generate serialized version of managed messages to validate them afterwards.')]
+#[AsCommand(
+    name: 'yousign:zdd-message:generate',
+    description: 'Generate serialized version of managed messages to validate them afterwards.',
+)]
 final class GenerateZddMessageCommand extends Command
 {
-    private ZddMessageFactory $zddMessageFactory;
-    private ZddMessageFilesystem $zddMessageFilesystem;
-
-    public function __construct(private readonly string $zddMessagePath, private readonly ZddMessageConfigInterface $zddMessageConfig, SerializerInterface $serializer)
-    {
+    public function __construct(
+        private readonly ZddMessageConfigInterface $config,
+        private readonly ZddMessageFactory $messageFactory,
+        private readonly ZddMessageFilesystem $filesystem,
+    ) {
         parent::__construct();
-
-        $this->zddMessageFactory = new ZddMessageFactory($zddMessageConfig, $serializer);
-        $this->zddMessageFilesystem = new ZddMessageFilesystem($this->zddMessagePath);
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
@@ -33,12 +32,12 @@ final class GenerateZddMessageCommand extends Command
         $table = $io->createTable();
         $table->setHeaders(['#', 'Message']);
 
-        foreach ($this->zddMessageConfig->getMessageToAssert() as $key => $messageFqcn) {
-            $zddMessage = $this->zddMessageFactory->create($messageFqcn);
+        $row = 1;
+        foreach ($this->config->getMessageToAssert() as $key => $instance) {
+            $message = $this->messageFactory->create($key, $instance);
+            $this->filesystem->write($message);
 
-            $this->zddMessageFilesystem->write($zddMessage);
-
-            $table->addRow([$key + 1, $messageFqcn]);
+            $table->addRow([$row++, $key]);
         }
 
         $table->render();

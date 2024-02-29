@@ -2,69 +2,45 @@
 
 namespace Yousign\ZddMessageBundle\Factory;
 
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 use Yousign\ZddMessageBundle\Exceptions\InvalidTypeException;
-use Yousign\ZddMessageBundle\Exceptions\MissingValueForTypeException;
 
 /**
  * @internal
  */
 final class ZddPropertyExtractor
 {
-    public function __construct(private readonly ZddMessageConfigInterface $config)
-    {
-    }
-
     /**
-     * @param class-string $className
+     * @return Property[]
      *
      * @throws InvalidTypeException
-     * @throws MissingValueForTypeException
-     * @throws \ReflectionException
      */
-    public function extractPropertiesFromClass(string $className): PropertyList
+    public function extractProperties(object $object): array
     {
-        $reflectionClass = new \ReflectionClass($className);
+        $reflectionClass = new \ReflectionClass($object);
 
-        $propertyList = new PropertyList();
+        $properties = [];
 
         foreach ($reflectionClass->getProperties() as $property) {
-            $propertyName = $property->getName();
-            $propertyType = $property->getType();
-
-            if (null === $propertyType) {
-                throw InvalidTypeException::typeMissing($propertyName, $className);
+            if (null === $property->getType()) {
+                continue;
             }
 
-            if (!$propertyType instanceof \ReflectionNamedType) {
+            if (!$property->getType() instanceof \ReflectionNamedType) {
                 throw InvalidTypeException::typeNotSupported();
             }
 
-            $typeHint = $propertyType->getName();
-            $value = $propertyType->allowsNull() ? null : $this->generateFakeValueFromType($typeHint);
-            $propertyList->addProperty(new Property($propertyName, $typeHint, $value));
+            if (!$property->getType()->isBuiltin()) {
+                $value = $property->getValue($object);
+                if (!is_object($value)) {
+                    continue;
+                }
+
+                $children = $this->extractProperties($value);
+            }
+
+            $properties[] = new Property($property->getName(), $property->getType()->getName(), $children ?? []);
         }
 
-        return $propertyList;
-    }
-
-    /**
-     * @throws MissingValueForTypeException
-     */
-    private function generateFakeValueFromType(string $typeHint): mixed
-    {
-        $value = $this->config->generateValueForCustomPropertyType($typeHint);
-        if (null !== $value) {
-            return $value;
-        }
-
-        return match ($typeHint) {
-            'string' => 'Hello World!',
-            'int' => 42,
-            'float' => 42.42,
-            'bool' => true,
-            'array' => ['PHP', 'For The Win'],
-            default => throw MissingValueForTypeException::missingValue($typeHint, $this->config),
-        };
+        return $properties;
     }
 }

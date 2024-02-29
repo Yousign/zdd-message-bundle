@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yousign\ZddMessageBundle\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -11,22 +13,17 @@ use Yousign\ZddMessageBundle\Assert\ZddMessageAsserter;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 use Yousign\ZddMessageBundle\Factory\ZddMessageFactory;
 use Yousign\ZddMessageBundle\Filesystem\ZddMessageFilesystem;
-use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
 
 #[AsCommand(name: 'yousign:zdd-message:validate', description: 'Validate the serialized version of managed messages with the current version.')]
 final class ValidateZddMessageCommand extends Command
 {
-    private ZddMessageFactory $zddMessageFactory;
-    private ZddMessageFilesystem $zddMessageFilesystem;
-    private ZddMessageAsserter $zddMessageAsserter;
-
-    public function __construct(private readonly string $zddMessagePath, private readonly ZddMessageConfigInterface $zddMessageConfig, SerializerInterface $serializer)
-    {
+    public function __construct(
+        private readonly ZddMessageConfigInterface $config,
+        private readonly ZddMessageFactory $messageFactory,
+        private readonly ZddMessageFilesystem $filesystem,
+        private readonly ZddMessageAsserter $messageAsserter,
+    ) {
         parent::__construct();
-
-        $this->zddMessageFactory = new ZddMessageFactory($zddMessageConfig, $serializer);
-        $this->zddMessageFilesystem = new ZddMessageFilesystem($this->zddMessagePath);
-        $this->zddMessageAsserter = new ZddMessageAsserter($serializer);
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
@@ -37,21 +34,24 @@ final class ValidateZddMessageCommand extends Command
         $table->setHeaders(['#', 'Message', 'ZDD Compliant?']);
 
         $errorCount = 0;
-        foreach ($this->zddMessageConfig->getMessageToAssert() as $key => $messageFqcn) {
-            if (false === $this->zddMessageFilesystem->exists($messageFqcn)) {
-                // It happens on newly added message, the trade-off here is to validate itself on current version
-                $zddMessage = $this->zddMessageFactory->create($messageFqcn);
-                $this->zddMessageFilesystem->write($zddMessage);
+
+        $row = 1;
+        foreach ($this->config->getMessageToAssert() as $name => $instance) {
+            if (false === $this->filesystem->exists($name)) {
+                $message = $this->messageFactory->create(
+                    $name,
+                    $instance,
+                );
+                $this->filesystem->write($message);
             }
 
-            $messageToAssert = $this->zddMessageFilesystem->read($messageFqcn);
+            $messageToAssert = $this->filesystem->read($name);
 
             try {
-                $this->zddMessageAsserter->assert($messageFqcn, $messageToAssert->serializedMessage(), $messageToAssert->propertyList());
-
-                $table->addRow([$key + 1, $messageFqcn, 'Yes ✅']);
+                $this->messageAsserter->assert($instance, $messageToAssert);
+                $table->addRow([$row++, $name, 'Yes ✅']);
             } catch (\Throwable $e) {
-                $table->addRow([$key + 1, $messageFqcn, 'No ❌']);
+                $table->addRow([$row++, $name, 'No ❌']);
                 ++$errorCount;
             }
         }

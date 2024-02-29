@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yousign\ZddMessageBundle\Filesystem;
 
-use Yousign\ZddMessageBundle\Factory\PropertyList;
+use Yousign\ZddMessageBundle\Factory\Property;
 use Yousign\ZddMessageBundle\Factory\ZddMessage;
 
 /**
@@ -12,87 +12,92 @@ use Yousign\ZddMessageBundle\Factory\ZddMessage;
  */
 final class ZddMessageFilesystem
 {
-    public function __construct(private readonly string $zddPath)
-    {
+    public function __construct(
+        private readonly string $path,
+    ) {
     }
 
-    public function write(ZddMessage $zddMessage): void
+    public function write(ZddMessage $message): void
     {
-        $basePath = $this->getBasePath($zddMessage->messageFqcn());
+        $basePath = $this->getBasePath($message->name);
         if (false === file_exists($basePath)) {
             if (!mkdir($basePath, recursive: true) && !is_dir($basePath)) {
                 throw new \RuntimeException(\sprintf('Unable to create directory "%s"', $basePath));
             }
         }
 
-        $serializedMessagePath = $this->getPathToSerializedMessage($zddMessage->messageFqcn());
-        $byteWrittenInTxt = \file_put_contents($serializedMessagePath, $zddMessage->serializedMessage());
+        $serializedMessagePath = $this->getPathToSerializedMessage($message->name);
+        $byteWrittenInTxt = \file_put_contents($serializedMessagePath, $message->serializedMessage);
         if (false === $byteWrittenInTxt || 0 === $byteWrittenInTxt) {
             throw new \RuntimeException(\sprintf('Unable to write file "%s"', $serializedMessagePath));
         }
 
-        $propertiesPath = $this->getPathToProperties($zddMessage->messageFqcn());
-        $byteWrittenInJson = \file_put_contents($propertiesPath, $zddMessage->propertyList()->toJson());
+        $propertiesPath = $this->getPathToProperties($message->name);
+        $byteWrittenInJson = \file_put_contents(
+            $propertiesPath,
+            json_encode($message->properties, JSON_THROW_ON_ERROR),
+        );
         if (false === $byteWrittenInJson || 0 === $byteWrittenInJson) {
             throw new \RuntimeException(\sprintf('Unable to write file "%s"', $propertiesPath));
         }
     }
 
-    public function read(string $messageFqcn): ZddMessage
+    public function read(string $messageName): ZddMessage
     {
-        $serializedMessagePath = $this->getPathToSerializedMessage($messageFqcn);
+        $serializedMessagePath = $this->getPathToSerializedMessage($messageName);
         if (false === $serializedMessage = \file_get_contents($serializedMessagePath)) {
             throw new \RuntimeException(\sprintf('Unable to read file "%s"', $serializedMessagePath));
         }
 
-        $propertiesPath = $this->getPathToProperties($messageFqcn);
-        if (false === $properties = \file_get_contents($propertiesPath)) {
+        $propertiesPath = $this->getPathToProperties($messageName);
+        if (false === $propertiesJson = \file_get_contents($propertiesPath)) {
             throw new \RuntimeException(\sprintf('Unable to read file "%s"', $propertiesPath));
         }
 
-        $propertyList = PropertyList::fromJson($properties);
+        /** @var Property[] $properties */
+        $properties = array_map(fn (array $p) => Property::fromArray($p), json_decode($propertiesJson, true));
 
-        return new ZddMessage($messageFqcn, $serializedMessage, $propertyList);
+        return new ZddMessage($messageName, $messageName, $serializedMessage, $properties); // TODO: Check 2nd parameter value
     }
 
-    public function exists(string $messageFqcn): bool
+    public function exists(string $messageName): bool
     {
-        $serializedMessagePath = $this->getPathToSerializedMessage($messageFqcn);
+        $serializedMessagePath = $this->getPathToSerializedMessage($messageName);
 
         return file_exists($serializedMessagePath);
     }
 
     /**
-     * @return array<int, string>
+     * @return array<string>
      */
-    private function getDirectoryAndShortname(string $classFqcn): array
+    private function getDirectoryAndShortname(string $messageName): array
     {
-        $path = explode('\\', $classFqcn);
+        $path = explode('\\', $messageName);
         $shortName = end($path);
         array_pop($path);
-        $directory = implode('/', $path);
+        $directory = implode(DIRECTORY_SEPARATOR, $path);
 
         return [$directory, $shortName];
     }
 
-    private function getPathToSerializedMessage(string $messageFqcn): string
+    private function getPathToSerializedMessage(string $messageName): string
     {
-        [$directory, $shortName] = $this->getDirectoryAndShortname($messageFqcn);
+        [$directory, $shortName] = $this->getDirectoryAndShortname($messageName);
 
-        return $this->zddPath.'/'.$directory.'/'.$shortName.'.txt';
+        return $this->path.DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.$shortName.'.txt';
     }
 
-    private function getPathToProperties(string $messageFqcn): string
+    private function getPathToProperties(string $messageName): string
     {
-        [$directory, $shortName] = $this->getDirectoryAndShortname($messageFqcn);
+        [$directory, $shortName] = $this->getDirectoryAndShortname($messageName);
 
-        return $this->zddPath.'/'.$directory.'/'.$shortName.'.properties.json';
+        return $this->path.'/'.$directory.'/'.$shortName.'.properties.json';
     }
 
-    private function getBasePath(string $messageFqcn): string
+    private function getBasePath(string $messageName): string
     {
-        [$directory] = $this->getDirectoryAndShortname($messageFqcn);
+        [$directory] = $this->getDirectoryAndShortname($messageName);
 
-        return $this->zddPath.'/'.$directory;
+        return $this->path.DIRECTORY_SEPARATOR.$directory;
     }
 }

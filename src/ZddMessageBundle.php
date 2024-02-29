@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yousign\ZddMessageBundle;
 
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
@@ -9,12 +11,10 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-use Yousign\ZddMessageBundle\Command\GenerateZddMessageCommand;
-use Yousign\ZddMessageBundle\Command\ListZddMessageCommand;
-use Yousign\ZddMessageBundle\Command\ValidateZddMessageCommand;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Yousign\ZddMessageBundle\Filesystem\ZddMessageFilesystem;
 use Yousign\ZddMessageBundle\Listener\Symfony\MessengerListener;
-use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
+use Yousign\ZddMessageBundle\Serializer\MessageSerializerInterface;
 use Yousign\ZddMessageBundle\Serializer\ZddMessageMessengerSerializer;
 
 final class ZddMessageBundle extends AbstractBundle
@@ -51,6 +51,7 @@ final class ZddMessageBundle extends AbstractBundle
                 ->defaults()
                     ->autowire()
                     ->autoconfigure()
+                ->load('Yousign\\ZddMessageBundle\\', __DIR__)
         ;
 
         $messageConfigServiceId = $config['message_config_service'];
@@ -58,8 +59,7 @@ final class ZddMessageBundle extends AbstractBundle
             throw new \LogicException(sprintf('You should configure zdd_message.message_config_service with a service that implements %s', ZddMessageConfigInterface::class));
         }
 
-        $serviceConfigurator->bind('$zddMessageConfig', service($messageConfigServiceId));
-        $serviceConfigurator->bind('$zddMessagePath', $config['serialized_messages_dir'] ?? $this->getDefaultPath($builder));
+        $serviceConfigurator->bind('$config', service($messageConfigServiceId));
 
         $messengerEnable = $config['log_untracked_messages']['messenger']['enable'] ?? false;
         if ($messengerEnable) {
@@ -77,10 +77,9 @@ final class ZddMessageBundle extends AbstractBundle
         }
 
         $serviceConfigurator
-            ->set(SerializerInterface::class, $config['serializer'])
-            ->set(GenerateZddMessageCommand::class)
-            ->set(ValidateZddMessageCommand::class)
-            ->set(ListZddMessageCommand::class)
+            ->set(ZddMessageFilesystem::class)
+                ->arg('$path', $config['serialized_messages_dir'] ?? $this->getDefaultPath($builder))
+            ->set(MessageSerializerInterface::class, $config['serializer'])
         ;
     }
 

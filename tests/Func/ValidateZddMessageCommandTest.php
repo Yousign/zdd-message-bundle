@@ -21,13 +21,13 @@ class ValidateZddMessageCommandTest extends KernelTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $kernel = self::bootKernel();
-        $this->command = new CommandTester((new Application(self::$kernel))->find('yousign:zdd-message:validate'));
-        $customBasePathFile = $kernel->getContainer()->getParameter('custom_path_file');
-        $this->serializedMessagesDir = $customBasePathFile.'/Yousign/ZddMessageBundle/Tests/Fixtures/App/Messages';
+        $this->command = new CommandTester((new Application($kernel))->find('yousign:zdd-message:validate'));
+        $this->serializedMessagesDir = __DIR__.'/../Fixtures/App/tmp/serialized_messages_directory';
 
         MessageConfig::$messagesToAssert = [
-            DummyMessage::class,
+            DummyMessage::class => new DummyMessage('Hi'),
         ];
     }
 
@@ -46,10 +46,12 @@ class ValidateZddMessageCommandTest extends KernelTestCase
 
     public function testThatCommandIsSuccessful(): void
     {
-        mkdir($this->serializedMessagesDir);
-        file_put_contents($this->serializedMessagesDir.'/DummyMessage.txt', $this->getSerializer()->serialize(new DummyMessage('Hi')));
-        file_put_contents($this->serializedMessagesDir.'/DummyMessage.properties.json', '[{"name":"content","type":"string"}]');
-        $this->assertSerializedFilesExist($this->serializedMessagesDir);
+        $baseDirectory = $this->serializedMessagesDir.'/Yousign/ZddMessageBundle/Tests/Fixtures/App/Messages';
+
+        mkdir($baseDirectory, recursive: true);
+        file_put_contents($baseDirectory.'/DummyMessage.txt', $this->getSerializer()->serialize(new DummyMessage('Hi')));
+        file_put_contents($baseDirectory.'/DummyMessage.properties.json', '[{"name":"content","type":"string", "children":[]}]');
+        $this->assertSerializedFilesExist($baseDirectory);
 
         $this->command->execute([]);
         $this->command->assertCommandIsSuccessful();
@@ -67,7 +69,9 @@ class ValidateZddMessageCommandTest extends KernelTestCase
 
     public function testThatCommandIsSuccessfulEvenIfTheSerializedMessageDoesNotExists(): void
     {
-        $this->assertFileDoesNotExist($this->serializedMessagesDir.'/DummyMessage.txt');
+        $baseDirectory = $this->serializedMessagesDir.'/Yousign/ZddMessageBundle/Tests/Fixtures/App/Messages';
+
+        $this->assertFileDoesNotExist($baseDirectory.'/DummyMessage.txt');
 
         $this->command->execute([]);
 
@@ -86,21 +90,25 @@ class ValidateZddMessageCommandTest extends KernelTestCase
 
     public function testThatCommandFailsWhenMessageIsNotZddCompliant(): void
     {
+        $baseDirectory = $this->serializedMessagesDir.'/Yousign/ZddMessageBundle/Tests/Fixtures/App/Messages';
+
         $serializedMessage = $this->getSerializedMessageForPreviousVersionOfDummyMessageWithNumberProperty();
         $data = [
             [
                 'name' => 'content',
                 'type' => 'string',
+                'children' => [],
             ],
             [
                 'name' => 'number',
                 'type' => 'int',
+                'children' => [],
             ],
         ];
-        mkdir($this->serializedMessagesDir);
-        file_put_contents($this->serializedMessagesDir.'/DummyMessage.txt', $serializedMessage);
-        file_put_contents($this->serializedMessagesDir.'/DummyMessage.properties.json', json_encode($data));
-        $this->assertSerializedFilesExist($this->serializedMessagesDir);
+        mkdir($baseDirectory, recursive: true);
+        file_put_contents($baseDirectory.'/DummyMessage.txt', $serializedMessage);
+        file_put_contents($baseDirectory.'/DummyMessage.properties.json', json_encode($data));
+        $this->assertSerializedFilesExist($baseDirectory);
 
         $this->command->execute([]);
 
