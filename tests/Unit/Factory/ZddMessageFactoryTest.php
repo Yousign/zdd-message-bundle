@@ -40,7 +40,7 @@ class ZddMessageFactoryTest extends TestCase
 
         $propertyNumber = $zddMessage->properties[1];
         $this->assertSame('number', $propertyNumber->name);
-        $this->assertSame('int', $propertyNumber->type);
+        $this->assertSame('NULL', $propertyNumber->type);
         $this->assertCount(0, $propertyNumber->children);
     }
 
@@ -92,12 +92,12 @@ class ZddMessageFactoryTest extends TestCase
 
         $propertyCount = $zddMessage->properties[1];
         $this->assertSame('count', $propertyCount->name);
-        $this->assertSame('int', $propertyCount->type);
+        $this->assertSame('integer', $propertyCount->type);
         $this->assertCount(0, $propertyCount->children);
 
         $propertyEnable = $zddMessage->properties[2];
         $this->assertSame('enable', $propertyEnable->name);
-        $this->assertSame('bool', $propertyEnable->type);
+        $this->assertSame('boolean', $propertyEnable->type);
         $this->assertCount(0, $propertyEnable->children);
 
         $propertyData = $zddMessage->properties[3];

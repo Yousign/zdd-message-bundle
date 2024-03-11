@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yousign\ZddMessageBundle\Factory;
 
 use Yousign\ZddMessageBundle\Exceptions\InvalidTypeException;
@@ -11,8 +13,6 @@ final class ZddPropertyExtractor
 {
     /**
      * @return Property[]
-     *
-     * @throws InvalidTypeException
      */
     public function extractProperties(object $object): array
     {
@@ -20,25 +20,21 @@ final class ZddPropertyExtractor
 
         $properties = [];
 
-        foreach ($reflectionClass->getProperties() as $property) {
-            if (null === $property->getType()) {
+        foreach ($reflectionClass->getProperties() as $reflectionProperty) {
+            if (null === $reflectionProperty->getType()) {
                 continue;
             }
 
-            if (!$property->getType() instanceof \ReflectionNamedType) {
+            if ($reflectionProperty->getType() instanceof \ReflectionIntersectionType) {
                 throw InvalidTypeException::typeNotSupported();
             }
 
-            if (!$property->getType()->isBuiltin()) {
-                $value = $property->getValue($object);
-                if (!is_object($value)) {
-                    continue;
-                }
-
-                $children = $this->extractProperties($value);
-            }
-
-            $properties[] = new Property($property->getName(), $property->getType()->getName(), $children ?? []);
+            $value = $reflectionProperty->getValue($object);
+            $properties[] = new Property(
+                $reflectionProperty->getName(),
+                is_object($value) ? $value::class : gettype($value),
+                is_object($value) ? $this->extractProperties($value) : [],
+            );
         }
 
         return $properties;

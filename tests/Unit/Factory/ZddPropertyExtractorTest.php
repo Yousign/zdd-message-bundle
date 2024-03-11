@@ -76,7 +76,7 @@ class ZddPropertyExtractorTest extends TestCase
         // wapper.command.intType.value
         $propertyValue = $childIntType->children[1];
         $this->assertSame('value', $propertyValue->name);
-        $this->assertSame('int', $propertyValue->type);
+        $this->assertSame('integer', $propertyValue->type);
         $this->assertCount(0, $propertyValue->children);
     }
 }

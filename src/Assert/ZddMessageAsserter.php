@@ -69,19 +69,17 @@ final class ZddMessageAsserter
                 throw new \LogicException(sprintf('Unable to find %s property in ZddMessage properties', $reflectionProperty->getName()));
             }
 
-            if (!$reflectionProperty->getType() instanceof \ReflectionNamedType) {
-                throw new \LogicException('$reflectionProperty::getType must be an instance of ReflectionNamedType');
+            if ($reflectionProperty->getType() instanceof \ReflectionIntersectionType) {
+                throw new \LogicException('$reflectionProperty::getType must not be an instance of ReflectionIntersectionType');
             }
-            if ($reflectionProperty->getType()->getName() !== $property->type) {
+
+            $type = is_object($value) ? $value::class : gettype($value);
+            if ('NULL' !== $type && $type !== $property->type) {
                 throw new \LogicException(sprintf('Error for property "%s" in class "%s", the type mismatch between the old and the new version of class. Please verify your integration.', $reflectionProperty->getName(), $object::class));
             }
 
             $childrenProperties = $property->children;
-            if (!$reflectionProperty->getType()->isBuiltin()) {
-                if (!is_object($value)) {
-                    // ERROR ?
-                    continue;
-                }
+            if (is_object($value)) {
                 $this->assertProperties($value, $childrenProperties);
             }
 

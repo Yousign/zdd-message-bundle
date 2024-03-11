@@ -60,7 +60,7 @@ class ZddMessageAsserterTest extends TestCase
                 $this->getSerializer()->serialize($instance),
                 [
                     new Property('content', 'string', []),
-                    new Property('number', 'int', []),
+                    new Property('number', 'integer', []),
                 ],
             ),
         ];
@@ -75,7 +75,7 @@ class ZddMessageAsserterTest extends TestCase
             $this->getSerializer()->serialize($instance),
             [
                 new Property('content', 'string', []),
-                new Property('number', 'int', []),
+                new Property('number', 'integer', []),
             ],
         );
 
@@ -118,7 +118,7 @@ class ZddMessageAsserterTest extends TestCase
             DummyMessage::class,
             $this->getSerializer()->serialize($instance),
             [
-                new Property('content', 'int', []), // Simulate error using 'int' typeHint instead of 'string'
+                new Property('content', 'integer', []), // Simulate error using 'int' typeHint instead of 'string'
             ],
         );
 
@@ -141,7 +141,7 @@ class ZddMessageAsserterTest extends TestCase
             DummyMessage::class,
             $serializedMessage,
             [
-                new Property('content', 'int', []), // Simulate error using 'int' typeHint instead of 'string'
+                new Property('content', 'integer', []), // Simulate error using 'int' typeHint instead of 'string'
             ],
         );
 
