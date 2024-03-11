@@ -1,70 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yousign\ZddMessageBundle\Factory;
 
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 use Yousign\ZddMessageBundle\Exceptions\InvalidTypeException;
-use Yousign\ZddMessageBundle\Exceptions\MissingValueForTypeException;
 
 /**
  * @internal
  */
 final class ZddPropertyExtractor
 {
-    public function __construct(private readonly ZddMessageConfigInterface $config)
-    {
-    }
-
     /**
-     * @param class-string $className
-     *
-     * @throws InvalidTypeException
-     * @throws MissingValueForTypeException
-     * @throws \ReflectionException
+     * @return Property[]
      */
-    public function extractPropertiesFromClass(string $className): PropertyList
+    public function extractProperties(object $object): array
     {
-        $reflectionClass = new \ReflectionClass($className);
+        $reflectionClass = new \ReflectionClass($object);
 
-        $propertyList = new PropertyList();
+        $properties = [];
 
-        foreach ($reflectionClass->getProperties() as $property) {
-            $propertyName = $property->getName();
-            $propertyType = $property->getType();
-
-            if (null === $propertyType) {
-                throw InvalidTypeException::typeMissing($propertyName, $className);
+        foreach ($reflectionClass->getProperties() as $reflectionProperty) {
+            if (null === $reflectionProperty->getType()) {
+                continue;
             }
 
-            if (!$propertyType instanceof \ReflectionNamedType) {
+            if ($reflectionProperty->getType() instanceof \ReflectionIntersectionType) {
                 throw InvalidTypeException::typeNotSupported();
             }
 
-            $typeHint = $propertyType->getName();
-            $value = $propertyType->allowsNull() ? null : $this->generateFakeValueFromType($typeHint);
-            $propertyList->addProperty(new Property($propertyName, $typeHint, $value));
+            $value = $reflectionProperty->getValue($object);
+            $properties[] = new Property(
+                $reflectionProperty->getName(),
+                is_object($value) ? $value::class : gettype($value),
+                is_object($value) ? $this->extractProperties($value) : [],
+            );
         }
 
-        return $propertyList;
-    }
-
-    /**
-     * @throws MissingValueForTypeException
-     */
-    private function generateFakeValueFromType(string $typeHint): mixed
-    {
-        $value = $this->config->generateValueForCustomPropertyType($typeHint);
-        if (null !== $value) {
-            return $value;
-        }
-
-        return match ($typeHint) {
-            'string' => 'Hello World!',
-            'int' => 42,
-            'float' => 42.42,
-            'bool' => true,
-            'array' => ['PHP', 'For The Win'],
-            default => throw MissingValueForTypeException::missingValue($typeHint, $this->config),
-        };
+        return $properties;
     }
 }

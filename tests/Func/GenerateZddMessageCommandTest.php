@@ -20,8 +20,7 @@ class GenerateZddMessageCommandTest extends KernelTestCase
 
         $kernel = self::bootKernel();
         $this->command = new CommandTester((new Application($kernel))->find('yousign:zdd-message:generate'));
-        $customBasePathFile = $kernel->getContainer()->getParameter('custom_path_file');
-        $this->serializedMessagesDir = $customBasePathFile.'/Yousign/ZddMessageBundle/Tests/Fixtures/App/Messages';
+        $this->serializedMessagesDir = __DIR__.'/../Fixtures/App/tmp/serialized_messages_directory';
     }
 
     protected function tearDown(): void
@@ -34,12 +33,14 @@ class GenerateZddMessageCommandTest extends KernelTestCase
 
     public function testThatCommandIsSuccessful(): void
     {
-        $this->assertDirectoryDoesNotExist($this->serializedMessagesDir);
+        $baseDirectory = $this->serializedMessagesDir.'/Yousign/ZddMessageBundle/Tests/Fixtures/App/Messages';
+
+        $this->assertDirectoryDoesNotExist($baseDirectory);
 
         $this->command->execute([]);
 
-        $this->assertDirectoryExists($this->serializedMessagesDir);
-        $this->assertSerializedFilesExist($this->serializedMessagesDir);
+        $this->assertDirectoryExists($baseDirectory);
+        $this->assertSerializedFilesExist($baseDirectory);
 
         $expectedResult = <<<EOF
          --- --------------------------------------------------------------------------------------------- 
@@ -48,8 +49,9 @@ class GenerateZddMessageCommandTest extends KernelTestCase
           1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage                            
           2   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty  
           3   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor      
-          4   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes         
-          5   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Other\DummyMessage                      
+          4   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithSafeDateTimeImmutable   
+          5   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes         
+          6   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Other\DummyMessage                      
          --- ---------------------------------------------------------------------------------------------  
         EOF;
 

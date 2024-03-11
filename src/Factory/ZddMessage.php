@@ -5,33 +5,58 @@ namespace Yousign\ZddMessageBundle\Factory;
 /**
  * @internal
  */
-final class ZddMessage
+final class ZddMessage implements \JsonSerializable
 {
+    /**
+     * @param Property[] $properties
+     */
     public function __construct(
-        private readonly string $messageFqcn,
-        private readonly string $serializedMessage,
-        private readonly PropertyList $propertyList,
-        private readonly ?object $message = null,
+        public readonly string $name,
+        public readonly string $type,
+        public readonly string $serializedMessage,
+        public readonly array $properties,
     ) {
     }
 
-    public function message(): ?object
+    public function getFingerprint(): string
     {
-        return $this->message;
+        $fingerprint = $this->type.'(';
+
+        $childrenCount = count($this->properties);
+
+        foreach ($this->properties as $index => $property) {
+            $fingerprint .= $property->getFingerprint();
+
+            if ($index < $childrenCount - 1) {
+                $fingerprint .= ',';
+            }
+        }
+
+        $fingerprint .= ')';
+
+        return $fingerprint;
     }
 
-    public function serializedMessage(): string
+    public function jsonSerialize(): array // @phpstan-ignore-line
     {
-        return $this->serializedMessage;
+        return [
+            'name' => $this->name,
+            'type' => $this->type,
+            'serialized_message' => $this->serializedMessage,
+            'properties' => $this->properties,
+        ];
     }
 
-    public function propertyList(): PropertyList
+    public static function fromArray(array $data): self // @phpstan-ignore-line
     {
-        return $this->propertyList;
-    }
-
-    public function messageFqcn(): string
-    {
-        return $this->messageFqcn;
+        return new self(
+            $data['name'],
+            $data['type'],
+            $data['serialized_message'],
+            array_map(
+                static fn (array $p) => Property::fromArray($p),
+                $data['properties'],
+            ),
+        );
     }
 }
