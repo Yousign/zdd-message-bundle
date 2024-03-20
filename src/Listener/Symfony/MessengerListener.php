@@ -39,8 +39,8 @@ final class MessengerListener implements EventSubscriberInterface
             $this->logger->log(
                 'warning',
                 'An error occurred when comparing the consumed message to the messages in `ZddMessageConfigInterface::getMessageToAssert`', [
-                $throwable->getMessage(),
-            ]);
+                    $throwable->getMessage(),
+                ]);
         }
     }
 
