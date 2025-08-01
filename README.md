@@ -115,6 +115,25 @@ $ git checkout - # Go back to the version you want to merge
 $ bin/console yousign:zdd-message:validate
 ```
 
+💡 Use verbose mode to see error details
+
+```
+$ bin/console yousign:zdd-message:validate -vv
+--- ------------------------------------------------------------------- ---------------- 
+#   Message                                                             ZDD Compliant?  
+--- ------------------------------------------------------------------- ---------------- 
+1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   No ❌           
+--- ------------------------------------------------------------------- ---------------- 
+
+! [NOTE] 1 error(s) triggered.                                                                                         
+
+------------------------------------------------------------------- -------------- 
+Message                                                             Error         
+------------------------------------------------------------------- -------------- 
+Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   Syntax error  
+------------------------------------------------------------------- --------------
+```
+
 ## Contributing
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
