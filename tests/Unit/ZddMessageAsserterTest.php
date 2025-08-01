@@ -25,7 +25,7 @@ class ZddMessageAsserterTest extends TestCase
     public function testItAssertsWithSuccess(
         string $messageFqcn,
         string $serializedMessage,
-        string $jsonProperties
+        string $jsonProperties,
     ): void {
         $propertyList = PropertyList::fromJson($jsonProperties);
         $sut = $this->getSut();
@@ -45,7 +45,7 @@ class ZddMessageAsserterTest extends TestCase
                 "type": "string"
               }
             ]
-            JSON
+            JSON,
         ];
 
         yield 'Number property has been switched to nullable' => [
@@ -62,7 +62,7 @@ class ZddMessageAsserterTest extends TestCase
                 "type": "int"
               }
             ]
-            JSON
+            JSON,
         ];
     }
 
