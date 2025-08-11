@@ -103,7 +103,7 @@ class MessengerListenerTest extends TestCase
             'warning',
         );
 
-        $message = new class() {
+        $message = new class {
             public function getMessage(): string
             {
                 return 'App\Foo\Class\Not\Exist';
@@ -123,7 +123,7 @@ class MessengerListenerTest extends TestCase
             new MessageConfig(),
         );
 
-        $message = new class() {
+        $message = new class {
             public function getMessage()
             {
                 throw new \Exception('dummy error');

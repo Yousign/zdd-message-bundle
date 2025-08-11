@@ -12,7 +12,7 @@ final class MessengerListener implements EventSubscriberInterface
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly ZddMessageConfigInterface $config,
-        private readonly string $logLevel = 'warning'
+        private readonly string $logLevel = 'warning',
     ) {
     }
 

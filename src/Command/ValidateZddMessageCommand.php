@@ -36,6 +36,9 @@ final class ValidateZddMessageCommand extends Command
         $table = $io->createTable();
         $table->setHeaders(['#', 'Message', 'ZDD Compliant?']);
 
+        $errorTable = $io->createTable();
+        $errorTable->setHeaders(['Message', 'Error']);
+
         $errorCount = 0;
         foreach ($this->zddMessageConfig->getMessageToAssert() as $key => $messageFqcn) {
             if (false === $this->zddMessageFilesystem->exists($messageFqcn)) {
@@ -52,6 +55,7 @@ final class ValidateZddMessageCommand extends Command
                 $table->addRow([$key + 1, $messageFqcn, 'Yes ✅']);
             } catch (\Throwable $e) {
                 $table->addRow([$key + 1, $messageFqcn, 'No ❌']);
+                $errorTable->addRow([$messageFqcn, $e->getMessage()]);
                 ++$errorCount;
             }
         }
@@ -60,6 +64,10 @@ final class ValidateZddMessageCommand extends Command
 
         if (0 !== $errorCount) {
             $io->note(\sprintf('%d error(s) triggered.', $errorCount));
+
+            if ($output->isVerbose()) {
+                $errorTable->render();
+            }
 
             return Command::FAILURE;
         }

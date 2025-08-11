@@ -5,6 +5,7 @@ namespace Yousign\ZddMessageBundle\Tests\Func;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
@@ -116,6 +117,49 @@ class ValidateZddMessageCommandTest extends KernelTestCase
         EOF;
 
         $this->assertSame(trim($expectedResult), trim($this->command->getDisplay()));
+    }
+
+    public function testThatErrorTableIsShownInVerboseMode(): void
+    {
+        $serializedMessage = $this->getSerializedMessageForPreviousVersionOfDummyMessageWithNumberProperty();
+        $data = [
+            [
+                'name' => 'content',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'number',
+                'type' => 'int',
+            ],
+        ];
+        mkdir($this->serializedMessagesDir);
+        file_put_contents($this->serializedMessagesDir.'/DummyMessage.txt', $serializedMessage);
+        file_put_contents($this->serializedMessagesDir.'/DummyMessage.properties.json', json_encode($data));
+        $this->assertSerializedFilesExist($this->serializedMessagesDir);
+
+        $this->command->execute([], ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
+
+        self::assertEquals(Command::FAILURE, $this->command->getStatusCode());
+        $expectedResult = <<<EOF
+         --- ------------------------------------------------------------------- ---------------- 
+          #   Message                                                             ZDD Compliant?  
+         --- ------------------------------------------------------------------- ---------------- 
+          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   No ❌           
+         --- ------------------------------------------------------------------- ---------------- 
+        
+         ! [NOTE] 1 error(s) triggered.
+
+         ------------------------------------------------------------------- -------------- 
+          Message                                                             Error         
+         ------------------------------------------------------------------- -------------- 
+          Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   Syntax error  
+         ------------------------------------------------------------------- --------------
+        EOF;
+
+        $this->assertSame(
+            preg_replace('/\s+$/m', '', $expectedResult),
+            preg_replace('/\s+$/m', '', $this->command->getDisplay())
+        );
     }
 
     private function getSerializedMessageForPreviousVersionOfDummyMessageWithNumberProperty(): string

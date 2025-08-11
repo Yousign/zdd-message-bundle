@@ -13,7 +13,7 @@ use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 final class ListZddMessageCommand extends Command
 {
     public function __construct(
-        private readonly ZddMessageConfigInterface $zddMessageConfig
+        private readonly ZddMessageConfigInterface $zddMessageConfig,
     ) {
         parent::__construct();
     }

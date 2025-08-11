@@ -24,7 +24,7 @@ final class ZddMessageAsserter
     public function assert(
         string $messageFqcn,
         string $serializedMessage,
-        PropertyList $propertyList
+        PropertyList $propertyList,
     ): void {
         // ✅ Assert message is unserializable
         $objectBefore = $this->serializer->deserialize($serializedMessage);
