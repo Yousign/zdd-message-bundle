@@ -50,5 +50,5 @@ interface ZddMessageConfigInterface
      *
      * @see MessageConfig in ZddMessageFakerTest.php for a concret examples
      */
-    public function generateValueForCustomPropertyType(string $type): mixed;
+    public function generateValueForCustomPropertyType(string $type, \ReflectionProperty $property): mixed;
 }

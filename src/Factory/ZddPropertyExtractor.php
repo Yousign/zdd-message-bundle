@@ -41,7 +41,7 @@ final class ZddPropertyExtractor
             }
 
             $typeHint = $propertyType->getName();
-            $value = $propertyType->allowsNull() ? null : $this->generateFakeValueFromType($typeHint);
+            $value = $propertyType->allowsNull() ? null : $this->generateFakeValueFromType($typeHint, $property);
             $propertyList->addProperty(new Property($propertyName, $typeHint, $value));
         }
 
@@ -51,9 +51,9 @@ final class ZddPropertyExtractor
     /**
      * @throws MissingValueForTypeException
      */
-    private function generateFakeValueFromType(string $typeHint): mixed
+    private function generateFakeValueFromType(string $typeHint, \ReflectionProperty $property): mixed
     {
-        $value = $this->config->generateValueForCustomPropertyType($typeHint);
+        $value = $this->config->generateValueForCustomPropertyType($typeHint, $property);
         if (null !== $value) {
             return $value;
         }

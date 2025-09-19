@@ -26,7 +26,7 @@ class MessageConfig implements ZddMessageConfigInterface
         ];
     }
 
-    public function generateValueForCustomPropertyType(string $type): mixed
+    public function generateValueForCustomPropertyType(string $type, \ReflectionProperty $property): mixed
     {
         return match ($type) {
             Locale::class => new Locale('fr'),
