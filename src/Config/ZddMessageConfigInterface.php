@@ -51,4 +51,18 @@ interface ZddMessageConfigInterface
      * @see MessageConfig in ZddMessageFakerTest.php for a concret examples
      */
     public function generateValueForCustomPropertyType(string $type): mixed;
+
+    /**
+     * If you need full control over how a specific message instance is created,
+     * use this method to return a fully instantiated message object.
+     * This is useful when the default instantiation (using reflection and property injection)
+     * is not sufficient or when your message requires specific constructor logic.
+     *
+     * @template T of object
+     *
+     * @param class-string<T> $className
+     *
+     * @return ?T The fully instantiated message object, or null if the default instantiation should be used
+     */
+    public function generateCustomMessage(string $className): ?object;
 }

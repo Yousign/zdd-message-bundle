@@ -12,10 +12,12 @@ use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
  */
 final class ZddMessageFactory
 {
+    private ZddMessageConfigInterface $config;
     private ZddPropertyExtractor $propertyExtractor;
 
     public function __construct(ZddMessageConfigInterface $config, private readonly SerializerInterface $serializer)
     {
+        $this->config = $config;
         $this->propertyExtractor = new ZddPropertyExtractor($config);
     }
 
@@ -26,10 +28,15 @@ final class ZddMessageFactory
     {
         try {
             $propertyList = $this->propertyExtractor->extractPropertiesFromClass($className);
-            $message = (new \ReflectionClass($className))->newInstanceWithoutConstructor();
-            foreach ($propertyList->getProperties() as $property) {
-                $this->forcePropertyValue($message, $property->name, $property->value);
+
+            $message = $this->config->generateCustomMessage($className);
+            if (null === $message) {
+                $message = (new \ReflectionClass($className))->newInstanceWithoutConstructor();
+                foreach ($propertyList->getProperties() as $property) {
+                    $this->forcePropertyValue($message, $property->name, $property->value);
+                }
             }
+
             $serializedMessage = $this->serializer->serialize($message);
         } catch (\Throwable $e) {
             throw new \LogicException('Unable to create ZddMessage for class "'.$className.'"', previous: $e);
