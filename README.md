@@ -28,6 +28,7 @@ class MessageConfig implements ZddMessageConfigInterface
     /**
      * Return the list of messages to assert.
      */
+    #[\Override]
     public function getMessageToAssert(): array
     {
         return [
@@ -41,11 +42,27 @@ class MessageConfig implements ZddMessageConfigInterface
      * If your message contains no scalar value as parameter such like value enums, value object more complex object,
      * you should use this method to return value for each type hint.
      */
+    #[\Override]
     public function generateValueForCustomPropertyType(string $type): mixed
     {
         return match ($type) {
             'App\ValueObject\Email' => new App\ValueObject\Email('dummy@email.fr'),
             'App\Enum\MyEnum' => App\Enum\MyEnum::MY_VALUE,
+            default => null,
+        };
+    }
+
+    /**
+     * If you need full control over how a specific message instance is created,
+     * use this method to return a fully instantiated message object.
+     * This is useful when the default instantiation (using reflection and property injection)
+     * is not sufficient or when your message requires specific constructor logic.
+     */
+    #[\Override]
+    public function generateCustomMessage(string $className): ?object
+    {
+        return match ($className) {
+            App\Message\ComplexMessage::class => new App\Message\ComplexMessage('custom data'),
             default => null,
         };
     }
