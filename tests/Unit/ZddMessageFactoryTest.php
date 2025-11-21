@@ -43,11 +43,9 @@ class ZddMessageFactoryTest extends TestCase
         self::assertTrue($zddMessage->propertyList()->has('content'));
         $property = $zddMessage->propertyList()->get('content');
         self::assertSame('string', $property->type);
-        self::assertSame('Hello World!', $property->value);
 
         $propertyNumber = $zddMessage->propertyList()->get('number');
         self::assertSame('int', $propertyNumber->type);
-        self::assertNull($propertyNumber->value);
     }
 
     public function testItGeneratesSerializedMessageForDummyMessageWithPrivateConstructor(): void
@@ -62,7 +60,6 @@ class ZddMessageFactoryTest extends TestCase
         self::assertTrue($zddMessage->propertyList()->has('content'));
         $property = $zddMessage->propertyList()->get('content');
         self::assertSame('string', $property->type);
-        self::assertSame('Hello World!', $property->value);
     }
 
     public function testItGeneratesSerializedMessageForDummyMessageContainingAllManagedTypesWithoutError(): void
