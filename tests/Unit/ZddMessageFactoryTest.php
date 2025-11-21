@@ -87,8 +87,12 @@ class ZddMessageFactoryTest extends TestCase
     {
         $factory = new ZddMessageFactory(new WithoutValueConfig(), $this->getSerializer());
 
-        $this->expectException(MissingValueForTypeException::class);
-        $this->expectExceptionMessage('Missing value for property type "Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage" maybe you forgot to add it in "App\WithoutValue\WithoutValueConfig"');
+        $this->expectExceptionObject(
+            new \LogicException(
+                message: 'Unable to create ZddMessage for class "App\WithoutValue\WithoutValue"',
+                previous: MissingValueForTypeException::missingValue('App\WithoutValue\WithoutValue', new WithoutValueConfig()),
+            )
+        );
         $factory->create(WithoutValue::class);
     }
 }

@@ -24,14 +24,16 @@ final class ZddMessageFactory
      */
     public function create(string $className): ZddMessage
     {
-        $propertyList = $this->propertyExtractor->extractPropertiesFromClass($className);
-
-        $message = (new \ReflectionClass($className))->newInstanceWithoutConstructor();
-        foreach ($propertyList->getProperties() as $property) {
-            $this->forcePropertyValue($message, $property->name, $property->value);
+        try {
+            $propertyList = $this->propertyExtractor->extractPropertiesFromClass($className);
+            $message = (new \ReflectionClass($className))->newInstanceWithoutConstructor();
+            foreach ($propertyList->getProperties() as $property) {
+                $this->forcePropertyValue($message, $property->name, $property->value);
+            }
+            $serializedMessage = $this->serializer->serialize($message);
+        } catch (\Throwable $e) {
+            throw new \LogicException('Unable to create ZddMessage for class "'.$className.'"', previous: $e);
         }
-
-        $serializedMessage = $this->serializer->serialize($message);
 
         return new ZddMessage($className, $serializedMessage, $propertyList, $message);
     }
