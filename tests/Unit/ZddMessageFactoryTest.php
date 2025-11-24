@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Yousign\ZddMessageBundle\Exceptions\MissingValueForTypeException;
 use Yousign\ZddMessageBundle\Factory\ZddMessageFactory;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
+use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyCustomMessage;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor;
@@ -18,11 +19,16 @@ class ZddMessageFactoryTest extends TestCase
 {
     use SerializerTrait;
 
-    private readonly ZddMessageFactory $zddMessageFactory;
+    private ZddMessageFactory $zddMessageFactory;
 
     public function setUp(): void
     {
         $this->zddMessageFactory = new ZddMessageFactory(new MessageConfig(), $this->getSerializer());
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->zddMessageFactory);
     }
 
     public function testItGeneratesSerializedMessageWithNullAndNotNullableProperties(): void
@@ -37,11 +43,9 @@ class ZddMessageFactoryTest extends TestCase
         self::assertTrue($zddMessage->propertyList()->has('content'));
         $property = $zddMessage->propertyList()->get('content');
         self::assertSame('string', $property->type);
-        self::assertSame('Hello World!', $property->value);
 
         $propertyNumber = $zddMessage->propertyList()->get('number');
         self::assertSame('int', $propertyNumber->type);
-        self::assertNull($propertyNumber->value);
     }
 
     public function testItGeneratesSerializedMessageForDummyMessageWithPrivateConstructor(): void
@@ -56,7 +60,6 @@ class ZddMessageFactoryTest extends TestCase
         self::assertTrue($zddMessage->propertyList()->has('content'));
         $property = $zddMessage->propertyList()->get('content');
         self::assertSame('string', $property->type);
-        self::assertSame('Hello World!', $property->value);
     }
 
     public function testItGeneratesSerializedMessageForDummyMessageContainingAllManagedTypesWithoutError(): void
@@ -95,6 +98,15 @@ class ZddMessageFactoryTest extends TestCase
         );
         $factory->create(WithoutValue::class);
     }
+
+    public function testGenerateCustomMessage(): void
+    {
+        $zddMessage = $this->zddMessageFactory->create(DummyCustomMessage::class);
+        self::assertEquals(1, $zddMessage->propertyList()->count());
+        self::assertSame('string', $zddMessage->propertyList()->get('content')->type);
+        // See the expected message in Fixtures\App\Messages\Config\MessageConfig::generateCustomMessage(...)
+        self::assertEquals(new DummyCustomMessage('custom message data'), $zddMessage->message());
+    }
 }
 
 namespace App\WithoutValue;
@@ -111,6 +123,7 @@ final class WithoutValue
 
 final class WithoutValueConfig implements ZddMessageConfigInterface
 {
+    #[\Override]
     public function getMessageToAssert(): array
     {
         return [
@@ -118,7 +131,14 @@ final class WithoutValueConfig implements ZddMessageConfigInterface
         ];
     }
 
+    #[\Override]
     public function generateValueForCustomPropertyType(string $type): mixed
+    {
+        return null;
+    }
+
+    #[\Override]
+    public function generateCustomMessage(string $className): ?object
     {
         return null;
     }

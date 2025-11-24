@@ -29,17 +29,21 @@ final class PropertyList
 
     public static function fromJson(string $data): self
     {
-        /** @var array<array<string,string>> $decodedProperties */
+        /** @var array<
+         *     array{name?: string, type?: string, isNullable?: bool}
+         * > $decodedProperties
+         */
         $decodedProperties = \json_decode($data, true);
         $properties = [];
         foreach ($decodedProperties as $decodedProperty) {
             $name = $decodedProperty['name'] ?? null;
             $type = $decodedProperty['type'] ?? null;
+            $isNullable = $decodedProperty['isNullable'] ?? null;
 
-            if (null === $name || null === $type) {
-                throw new \LogicException(sprintf('Missing keys name and/or type in decoded properties from data: "%s"', $data));
+            if (null === $name || null === $type || null === $isNullable) {
+                throw new \LogicException(sprintf('Missing keys name and/or type and/or isNullable in decoded properties from data: "%s"', $data));
             }
-            $properties[] = new Property($decodedProperty['name'], $decodedProperty['type'], null);
+            $properties[] = new Property($name, $type, $isNullable);
         }
 
         return new self($properties);
@@ -94,6 +98,7 @@ final class PropertyList
             $data[] = [
                 'name' => $property->name,
                 'type' => $property->type,
+                'isNullable' => $property->isNullable,
             ];
         }
 

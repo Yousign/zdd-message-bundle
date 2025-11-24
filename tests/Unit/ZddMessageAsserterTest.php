@@ -42,7 +42,8 @@ class ZddMessageAsserterTest extends TestCase
             [
               {
                 "name": "content",
-                "type": "string"
+                "type": "string",
+                "isNullable": false
               }
             ]
             JSON,
@@ -55,11 +56,13 @@ class ZddMessageAsserterTest extends TestCase
             [
               {
                 "name": "content",
-                "type": "string"
+                "type": "string",
+                "isNullable": false
               },
               {
                 "name": "number",
-                "type": "int"
+                "type": "int",
+                "isNullable": false
               }
             ]
             JSON,
@@ -86,11 +89,13 @@ class ZddMessageAsserterTest extends TestCase
           [
             {
               "name": "content",
-              "type": "string"
+              "type": "string",
+              "isNullable": false
             },
             {
               "name": "number",
-              "type": "int"
+              "type": "int",
+              "isNullable": false
             }
           ]
         JSON;
@@ -124,7 +129,8 @@ class ZddMessageAsserterTest extends TestCase
         [
            {
               "name": "content",
-              "type": "int"
+              "type": "int",
+              "isNullable": false
             }
         ]
         JSON
