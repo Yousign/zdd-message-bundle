@@ -9,6 +9,7 @@ use Yousign\ZddMessageBundle\Exceptions\MissingValueForTypeException;
 use Yousign\ZddMessageBundle\Factory\ZddMessageFactory;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes;
+use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithInheritedReadonlyProperty;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale;
@@ -42,6 +43,22 @@ class ZddMessageFactoryTest extends TestCase
         $propertyNumber = $zddMessage->propertyList()->get('number');
         self::assertSame('int', $propertyNumber->type);
         self::assertNull($propertyNumber->value);
+    }
+
+    public function testItGeneratesSerializedMessageForDummyMessageWithInheritedReadonlyProperty(): void
+    {
+        $zddMessage = $this->zddMessageFactory->create(DummyMessageWithInheritedReadonlyProperty::class);
+
+        self::assertSame(
+            $this->getSerializer()->serialize(new DummyMessageWithInheritedReadonlyProperty('Hello World!')),
+            $zddMessage->serializedMessage()
+        );
+
+        self::assertEquals(1, $zddMessage->propertyList()->count());
+        self::assertTrue($zddMessage->propertyList()->has('content'));
+        $property = $zddMessage->propertyList()->get('content');
+        self::assertSame('string', $property->type);
+        self::assertSame('Hello World!', $property->value);
     }
 
     public function testItGeneratesSerializedMessageForDummyMessageWithPrivateConstructor(): void

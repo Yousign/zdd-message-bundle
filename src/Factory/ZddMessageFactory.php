@@ -43,6 +43,11 @@ final class ZddMessageFactory
         $reflectionClass = new \ReflectionClass($object);
         $reflectionProperty = $reflectionClass->getProperty($property);
 
+        // Readonly properties can only be set on the declaring class in case of inheritance
+        if ($reflectionProperty->isReadOnly()) {
+            $reflectionProperty = $reflectionProperty->getDeclaringClass()->getProperty($property);
+        }
+
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($object, $value);
     }
