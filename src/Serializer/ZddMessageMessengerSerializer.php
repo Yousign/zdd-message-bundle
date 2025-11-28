@@ -21,6 +21,7 @@ class ZddMessageMessengerSerializer implements SerializerInterface
 
     public function deserialize(string $data): object
     {
+        /** @var array{body: string, headers?: array<string, string>} $dataArray */
         $dataArray = \json_decode($data, true, 512, \JSON_THROW_ON_ERROR);
         if (!\is_array($dataArray)) {
             throw new \InvalidArgumentException(sprintf('Array expected, %s provided', \gettype($data)));

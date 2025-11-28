@@ -5,6 +5,7 @@ namespace Yousign\ZddMessageBundle\Tests\Unit\Listener\Symfony;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
+use Symfony\Component\Messenger\Message\RedispatchMessage;
 use Yousign\ZddMessageBundle\Listener\Symfony\MessengerListener;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Logger\SpyLogger;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
@@ -36,6 +37,12 @@ class MessengerListenerTest extends TestCase
         yield DummyMessageWithNullableNumberProperty::class => [
             new DummyMessageWithNullableNumberProperty('Hello World'),
         ];
+
+        if (class_exists(RedispatchMessage::class)) {
+            yield RedispatchMessage::class => [
+                new RedispatchMessage(new DummyMessage('Hello World'), 'new_transport'),
+            ];
+        }
     }
 
     /**
