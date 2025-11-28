@@ -5,6 +5,7 @@ namespace Yousign\ZddMessageBundle\Listener\Symfony;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
+use Symfony\Component\Messenger\Message\RedispatchMessage;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 
 final class MessengerListener implements EventSubscriberInterface
@@ -23,6 +24,10 @@ final class MessengerListener implements EventSubscriberInterface
             // In case of $message act like an envelope.
             if (method_exists($message, 'getMessage')) {
                 $message = $message->getMessage();
+            }
+            // Do not check RedispatchMessage as it's just a wrapper around the real message that will come back here later.
+            if (class_exists(RedispatchMessage::class) && $message instanceof RedispatchMessage) {
+                return;
             }
 
             if (is_object($message) && !in_array($class = get_class($message), $this->config->getMessageToAssert(), true)) {
