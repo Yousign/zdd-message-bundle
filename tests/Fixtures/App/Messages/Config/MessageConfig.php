@@ -2,7 +2,9 @@
 
 namespace Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config;
 
+use Yousign\ZddMessageBundle\Config\CustomMessageGeneratorInterface;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyCustomMessage;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty;
@@ -11,10 +13,11 @@ use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Other;
 
-class MessageConfig implements ZddMessageConfigInterface
+class MessageConfig implements ZddMessageConfigInterface, CustomMessageGeneratorInterface
 {
     public static array $messagesToAssert = [];
 
+    #[\Override]
     public function getMessageToAssert(): array
     {
         return [] !== self::$messagesToAssert ? self::$messagesToAssert : [
@@ -23,9 +26,11 @@ class MessageConfig implements ZddMessageConfigInterface
             DummyMessageWithPrivateConstructor::class,
             DummyMessageWithAllManagedTypes::class,
             Other\DummyMessage::class,
+            DummyCustomMessage::class,
         ];
     }
 
+    #[\Override]
     public function generateValueForCustomPropertyType(string $type): mixed
     {
         return match ($type) {
@@ -39,5 +44,15 @@ class MessageConfig implements ZddMessageConfigInterface
     public static function reset(): void
     {
         self::$messagesToAssert = [];
+    }
+
+    #[\Override]
+    public function generateCustomMessage(string $className): ?object
+    {
+        if (DummyCustomMessage::class === $className) {
+            return new DummyCustomMessage('custom message data');
+        }
+
+        return null;
     }
 }

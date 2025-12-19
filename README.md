@@ -4,30 +4,33 @@ A Symfony Bundle to use when you want to assert that messages used with Message 
 
 ## Getting started
 ### Installation
-You can easily install Zdd Message bundle by composer
+First, install the bundle with composer:
 ```
 $ composer require yousign/zdd-message-bundle
 ```
-Then, bundle should be registered. Just verify that `config\bundles.php` is containing :
+
+Then, verify that the bundle has been registered in `config/bundles.php`:
 ```php
 Yousign\ZddMessageBundle\ZddMessageBundle::class => ['all' => true],
 ```
 
 ### Configuration
-Once the bundle is installed, you should create a class to configure the messages to assert and how to create them:
+Create a class to configure the messages to assert and how to create them:
 
 ```php
 <?php
 
 namespace App\Message;
 
+use Yousign\ZddMessageBundle\Config\CustomMessageGeneratorInterface;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 
-class MessageConfig implements ZddMessageConfigInterface
+class MessageConfig implements ZddMessageConfigInterface, CustomMessageGeneratorInterface
 {
     /**
      * Return the list of messages to assert.
      */
+    #[\Override]
     public function getMessageToAssert(): array
     {
         return [
@@ -41,6 +44,7 @@ class MessageConfig implements ZddMessageConfigInterface
      * If your message contains no scalar value as parameter such like value enums, value object more complex object,
      * you should use this method to return value for each type hint.
      */
+    #[\Override]
     public function generateValueForCustomPropertyType(string $type): mixed
     {
         return match ($type) {
@@ -49,21 +53,39 @@ class MessageConfig implements ZddMessageConfigInterface
             default => null,
         };
     }
+
+    /**
+     * Optional: Implement CustomMessageGeneratorInterface if you need full control
+     * over how a specific message instance is created.
+     * This is useful when the default instantiation (using reflection and property injection)
+     * is not sufficient or when your message requires specific constructor logic.
+     *
+     * WARNING: The object must be instantiated with minimum requirements (i.e., nullable properties
+     * must be set as null) in order to ensure a good ZDD test.
+     */
+    #[\Override]
+    public function generateCustomMessage(string $className): ?object
+    {
+        return match ($className) {
+            App\Message\ComplexMessage::class => new App\Message\ComplexMessage('custom data'),
+            default => null,
+        };
+    }
 }
 ```
 
-When the class is created, you can register it as a service.
+Then, register this class as a service.
 
 ```yaml
 # config/services.yaml
-  App\Message\MessageConfig: ~
+  App\Message\MessageConfig:
 ```
 
-Then, you should register it in the configuration (`config/packages/zdd_message.yaml`) :
+Finish by updating the configuration with this new service in `config/packages/zdd_message.yaml`:
 ```yaml
 # config/packages/zdd_message.yaml
   zdd_message:
-    serialized_messages_dir: 'var/serialized_messages' # The directory where the serialized messages will be stored (default: '%kernel.logs_dir%')
+    message_config_service: App\Message\MessageConfig
 ```
 
 #### Optional configuration
@@ -71,7 +93,7 @@ Then, you should register it in the configuration (`config/packages/zdd_message.
 **Use a custom serializer**
 
 Option to use different serializer.
-Possible options :
+Possible options:
 - `Yousign\ZddMessageBundle\Serializer\ZddMessageMessengerSerializer` (default, already configured for messenger serialization in messenger.yaml)
 - Define your own serializer
   - Create a service that implement `Yousign\ZddMessageBundle\Serializer\SerializerInterface`
@@ -80,6 +102,17 @@ Possible options :
 # config/packages/zdd_message.yaml
   zdd_message:
     serializer: '<your-service-id>'
+```
+
+**Custom directory for serialized messages**
+
+Option to specify a custom directory where serialized messages will be stored.
+
+```yaml
+# config/packages/zdd_message.yaml
+zdd_message:
+  # ...
+  serialized_messages_dir: '%kernel.project_dir%/custom/path' # Default: '%kernel.project_dir%/var/zdd-message'
 ```
 
 **Detect messages not tracked**

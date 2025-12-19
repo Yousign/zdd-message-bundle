@@ -7,7 +7,7 @@ phpcs: ## Run PHP CS Fixer
 test: ## Run code tests
 	./vendor/bin/phpunit --testdox
 
-phpstan:
+phpstan: ## Run PHPStan static analysis
 	./vendor/bin/phpstan analyse src --level=9
 
 test-phpcs: ## Run coding standard tests
