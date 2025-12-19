@@ -22,9 +22,10 @@ Create a class to configure the messages to assert and how to create them:
 
 namespace App\Message;
 
+use Yousign\ZddMessageBundle\Config\CustomMessageGeneratorInterface;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 
-class MessageConfig implements ZddMessageConfigInterface
+class MessageConfig implements ZddMessageConfigInterface, CustomMessageGeneratorInterface
 {
     /**
      * Return the list of messages to assert.
@@ -54,10 +55,13 @@ class MessageConfig implements ZddMessageConfigInterface
     }
 
     /**
-     * If you need full control over how a specific message instance is created,
-     * use this method to return a fully instantiated message object.
+     * Optional: Implement CustomMessageGeneratorInterface if you need full control
+     * over how a specific message instance is created.
      * This is useful when the default instantiation (using reflection and property injection)
      * is not sufficient or when your message requires specific constructor logic.
+     *
+     * WARNING: The object must be instantiated with minimum requirements (i.e., nullable properties
+     * must be set as null) in order to ensure a good ZDD test.
      */
     #[\Override]
     public function generateCustomMessage(string $className): ?object

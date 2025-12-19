@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yousign\ZddMessageBundle\Factory;
 
+use Yousign\ZddMessageBundle\Config\CustomMessageGeneratorInterface;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 use Yousign\ZddMessageBundle\Exceptions\MissingValueForTypeException;
 
@@ -24,9 +25,11 @@ final class MessageGenerator
      */
     public function generate(string $className): object
     {
-        $message = $this->config->generateCustomMessage($className);
-        if (null !== $message) {
-            return $message;
+        if ($this->config instanceof CustomMessageGeneratorInterface) {
+            $message = $this->config->generateCustomMessage($className);
+            if (null !== $message) {
+                return $message;
+            }
         }
 
         $message = (new \ReflectionClass($className))->newInstanceWithoutConstructor();

@@ -152,10 +152,4 @@ final class WithoutValueConfig implements ZddMessageConfigInterface
     {
         return null;
     }
-
-    #[\Override]
-    public function generateCustomMessage(string $className): ?object
-    {
-        return null;
-    }
 }

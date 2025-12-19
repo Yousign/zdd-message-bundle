@@ -2,6 +2,7 @@
 
 namespace Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config;
 
+use Yousign\ZddMessageBundle\Config\CustomMessageGeneratorInterface;
 use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyCustomMessage;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
@@ -12,7 +13,7 @@ use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status;
 use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Other;
 
-class MessageConfig implements ZddMessageConfigInterface
+class MessageConfig implements ZddMessageConfigInterface, CustomMessageGeneratorInterface
 {
     public static array $messagesToAssert = [];
 
