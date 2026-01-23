@@ -49,7 +49,7 @@ class ValidateZddMessageCommandTest extends KernelTestCase
     {
         mkdir($this->serializedMessagesDir);
         file_put_contents($this->serializedMessagesDir.'/DummyMessage.txt', $this->getSerializer()->serialize(new DummyMessage('Hi')));
-        file_put_contents($this->serializedMessagesDir.'/DummyMessage.properties.json', '[{"name":"content","type":"string"}]');
+        file_put_contents($this->serializedMessagesDir.'/DummyMessage.properties.json', '[{"name":"content","type":"string","isNullable":false}]');
         $this->assertSerializedFilesExist($this->serializedMessagesDir);
 
         $this->command->execute([]);
@@ -92,10 +92,12 @@ class ValidateZddMessageCommandTest extends KernelTestCase
             [
                 'name' => 'content',
                 'type' => 'string',
+                'isNullable' => false,
             ],
             [
                 'name' => 'number',
                 'type' => 'int',
+                'isNullable' => false,
             ],
         ];
         mkdir($this->serializedMessagesDir);
@@ -126,10 +128,12 @@ class ValidateZddMessageCommandTest extends KernelTestCase
             [
                 'name' => 'content',
                 'type' => 'string',
+                'isNullable' => false,
             ],
             [
                 'name' => 'number',
                 'type' => 'int',
+                'isNullable' => false,
             ],
         ];
         mkdir($this->serializedMessagesDir);
