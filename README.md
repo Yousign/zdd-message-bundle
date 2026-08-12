@@ -4,8 +4,8 @@ A Symfony Bundle to use when you want to assert that messages used with Message 
 
 ## Requirements
 
-- PHP 8.1 and above
-- Symfony 6.2, 7 or 8
+- PHP 8.4 and above
+- Symfony 7.4 or 8
 
 ## Getting started
 ### Installation
