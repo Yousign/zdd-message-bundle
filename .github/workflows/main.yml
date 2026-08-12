@@ -17,7 +17,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.4'
           tools: php-cs-fixer
 
       - name: PHP Coding Standards Fixer
@@ -28,17 +28,26 @@ jobs:
     name: PHPStan
     steps:
       - uses: actions/checkout@v3
-      - uses: php-actions/composer@v6 # or alternative dependency management
-      - uses: php-actions/phpstan@v3
+
+      # Runs the PHPStan the project depends on, with the command from the Makefile. The
+      # php-actions/phpstan action brings its own version, which cannot be kept in step with
+      # composer.json — and PHPStan 1 cannot parse Symfony 8.
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          path: src/
-          level: 9
+          php-version: '8.4'
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-progress
+
+      - name: PHPStan
+        run: vendor/bin/phpstan analyse src --level=9
 
   phpunit:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['8.1', '8.2', '8.3']
+        php-versions: ['8.4', '8.5']
         mode: ['high-deps', 'low-deps']
       fail-fast: false
     name: PHP ${{ matrix.php-versions }} tests with ${{ matrix.mode }}

@@ -2,6 +2,11 @@
 
 A Symfony Bundle to use when you want to assert that messages used with Message brokers such like RabbitMQ are compliant with the Zero Downtime Deployment.
 
+## Requirements
+
+- PHP 8.4 and above
+- Symfony 7.4 or 8
+
 ## Getting started
 ### Installation
 First, install the bundle with composer:

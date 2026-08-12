@@ -73,7 +73,7 @@ final class MessageGenerator
             $reflectionProperty = $reflectionProperty->getDeclaringClass()->getProperty($property);
         }
 
-        $reflectionProperty->setAccessible(true);
+        // No setAccessible() call: it has had no effect since PHP 8.1 and is deprecated in 8.5.
         $reflectionProperty->setValue($object, $value);
     }
 }
