@@ -2,21 +2,47 @@
 
 A Symfony Bundle to use when you want to assert that messages used with Message brokers such like RabbitMQ are compliant with the Zero Downtime Deployment.
 
+## Upgrading from `yousign/zdd-message-bundle`
+
+This bundle was published as `yousign/zdd-message-bundle` up to v3.3.0, under the
+`Yousign\ZddMessageBundle\` namespace. Following the company rename to Youtrust, v4.0.0 moves to
+`youtrust/zdd-message-bundle` and the `Youtrust\ZddMessageBundle\` namespace. There is no functional
+change between v3.3.0 and v4.0.0.
+
+```
+$ composer remove yousign/zdd-message-bundle
+$ composer require youtrust/zdd-message-bundle:^4.0
+```
+
+Then replace every `Yousign\ZddMessageBundle\` prefix with `Youtrust\ZddMessageBundle\`. Beyond your PHP
+code, three spots live in configuration and are easy to miss:
+
+- the bundle class in `config/bundles.php`
+- the serializer service in `messenger.yaml`, if you use `ZddMessageMessengerSerializer`
+- your own implementations of `ZddMessageConfigInterface` and `CustomMessageGeneratorInterface`
+
+The console commands are renamed to `youtrust:zdd-message:*`, with **no alias kept for the old names**.
+They are typically invoked from CI pipelines rather than from PHP, so unlike the namespace change this one
+fails at run time rather than at autoload time — update your pipelines as part of the upgrade.
+
+`yousign/zdd-message-bundle` is abandoned and no longer maintained. It will receive no further release of
+any kind, security fixes included.
+
 ## Requirements
 
-- PHP 8.4 and above
+- PHP 8.3 and above
 - Symfony 7.4 or 8
 
 ## Getting started
 ### Installation
 First, install the bundle with composer:
 ```
-$ composer require yousign/zdd-message-bundle
+$ composer require youtrust/zdd-message-bundle
 ```
 
 Then, verify that the bundle has been registered in `config/bundles.php`:
 ```php
-Yousign\ZddMessageBundle\ZddMessageBundle::class => ['all' => true],
+Youtrust\ZddMessageBundle\ZddMessageBundle::class => ['all' => true],
 ```
 
 ### Configuration
@@ -27,8 +53,8 @@ Create a class to configure the messages to assert and how to create them:
 
 namespace App\Message;
 
-use Yousign\ZddMessageBundle\Config\CustomMessageGeneratorInterface;
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Youtrust\ZddMessageBundle\Config\CustomMessageGeneratorInterface;
+use Youtrust\ZddMessageBundle\Config\ZddMessageConfigInterface;
 
 class MessageConfig implements ZddMessageConfigInterface, CustomMessageGeneratorInterface
 {
@@ -99,9 +125,9 @@ Finish by updating the configuration with this new service in `config/packages/z
 
 Option to use different serializer.
 Possible options:
-- `Yousign\ZddMessageBundle\Serializer\ZddMessageMessengerSerializer` (default, already configured for messenger serialization in messenger.yaml)
+- `Youtrust\ZddMessageBundle\Serializer\ZddMessageMessengerSerializer` (default, already configured for messenger serialization in messenger.yaml)
 - Define your own serializer
-  - Create a service that implement `Yousign\ZddMessageBundle\Serializer\SerializerInterface`
+  - Create a service that implement `Youtrust\ZddMessageBundle\Serializer\SerializerInterface`
   - Use it in the configuration
 ```yaml
 # config/packages/zdd_message.yaml
@@ -138,29 +164,29 @@ zdd_message:
 The bundle comes with commands to assert that your messages are compliant with the Zero Downtime Deployment:
 
 ```bash
-$ bin/console yousign:zdd-message:generate # Generate serialized messages in files.
-$ bin/console yousign:zdd-message:validate # Assert that the messages are compliant by deserializing them from files and call the properties.
-$ bin/console yousign:zdd-message:debug # Output all tracked messages.
+$ bin/console youtrust:zdd-message:generate # Generate serialized messages in files.
+$ bin/console youtrust:zdd-message:validate # Assert that the messages are compliant by deserializing them from files and call the properties.
+$ bin/console youtrust:zdd-message:debug # Output all tracked messages.
 ```
 
-💡 You should run `bin/console yousign:zdd-message:generate` with the production version code and `bin/console yousign:zdd-message:validate` with the version code you want to merge.
+💡 You should run `bin/console youtrust:zdd-message:generate` with the production version code and `bin/console youtrust:zdd-message:validate` with the version code you want to merge.
 
 #### Example from the version you want to merge:
 ```bash
 $ git checkout [production_version]
-$ bin/console yousign:zdd-message:generate
+$ bin/console youtrust:zdd-message:generate
 $ git checkout - # Go back to the version you want to merge
-$ bin/console yousign:zdd-message:validate
+$ bin/console youtrust:zdd-message:validate
 ```
 
 💡 Use verbose mode to see error details
 
 ```
-$ bin/console yousign:zdd-message:validate -vv
+$ bin/console youtrust:zdd-message:validate -vv
 --- ------------------------------------------------------------------- ---------------- 
 #   Message                                                             ZDD Compliant?  
 --- ------------------------------------------------------------------- ---------------- 
-1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   No ❌           
+1   Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   No ❌           
 --- ------------------------------------------------------------------- ---------------- 
 
 ! [NOTE] 1 error(s) triggered.                                                                                         
@@ -168,7 +194,7 @@ $ bin/console yousign:zdd-message:validate -vv
 ------------------------------------------------------------------- -------------- 
 Message                                                             Error         
 ------------------------------------------------------------------- -------------- 
-Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   Syntax error  
+Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   Syntax error  
 ------------------------------------------------------------------- --------------
 ```
 
@@ -187,7 +213,7 @@ $ make all
 
 If you want to use your local fork to develop in your projects, you can use the link command to replace the vendor installation by your local version.
 ```bash
-$ ./link /home/yousign/dev/my-project
+$ ./link /home/youtrust/dev/my-project
 ```
 
 ## Authors

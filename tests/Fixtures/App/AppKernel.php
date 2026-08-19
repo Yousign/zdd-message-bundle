@@ -1,13 +1,13 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Tests\Fixtures\App;
+namespace Youtrust\ZddMessageBundle\Tests\Fixtures\App;
 
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
-use Yousign\ZddMessageBundle\ZddMessageBundle;
+use Youtrust\ZddMessageBundle\ZddMessageBundle;
 
 class AppKernel extends Kernel
 {

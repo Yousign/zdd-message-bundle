@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yousign\ZddMessageBundle\Factory;
+namespace Youtrust\ZddMessageBundle\Factory;
 
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
-use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
+use Youtrust\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Youtrust\ZddMessageBundle\Serializer\SerializerInterface;
 
 /**
  * @internal

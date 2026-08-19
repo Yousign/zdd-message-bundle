@@ -1,6 +1,6 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Tests\Fixtures\App\Logger;
+namespace Youtrust\ZddMessageBundle\Tests\Fixtures\App\Logger;
 
 use Psr\Log\AbstractLogger;
 

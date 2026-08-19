@@ -1,6 +1,6 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Serializer;
+namespace Youtrust\ZddMessageBundle\Serializer;
 
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;

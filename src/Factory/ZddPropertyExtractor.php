@@ -1,8 +1,8 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Factory;
+namespace Youtrust\ZddMessageBundle\Factory;
 
-use Yousign\ZddMessageBundle\Exceptions\InvalidTypeException;
+use Youtrust\ZddMessageBundle\Exceptions\InvalidTypeException;
 
 /**
  * @internal

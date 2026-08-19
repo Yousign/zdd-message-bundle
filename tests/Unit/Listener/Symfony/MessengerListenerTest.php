@@ -1,19 +1,19 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Tests\Unit\Listener\Symfony;
+namespace Youtrust\ZddMessageBundle\Tests\Unit\Listener\Symfony;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
 use Symfony\Component\Messenger\Message\RedispatchMessage;
-use Yousign\ZddMessageBundle\Listener\Symfony\MessengerListener;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Logger\SpyLogger;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status;
+use Youtrust\ZddMessageBundle\Listener\Symfony\MessengerListener;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Logger\SpyLogger;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status;
 
 class MessengerListenerTest extends TestCase
 {

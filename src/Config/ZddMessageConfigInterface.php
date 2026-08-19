@@ -1,6 +1,6 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Config;
+namespace Youtrust\ZddMessageBundle\Config;
 
 interface ZddMessageConfigInterface
 {

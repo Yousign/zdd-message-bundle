@@ -1,13 +1,13 @@
 {
     "type": "library",
-    "name": "yousign/zdd-message-bundle",
+    "name": "youtrust/zdd-message-bundle",
     "description": "Assert Zero Downtime Deployment compliance for messages",
     "license": "MIT",
     "keywords": ["dev", "zdd"],
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": "^8.4",
+        "php": "^8.3",
         "symfony/console": "^7.4|^8.0"
     },
     "require-dev": {
@@ -21,12 +21,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Yousign\\ZddMessageBundle\\": "src/"
+            "Youtrust\\ZddMessageBundle\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Yousign\\ZddMessageBundle\\Tests\\": "tests/"
+            "Youtrust\\ZddMessageBundle\\Tests\\": "tests/"
         }
     }
 }

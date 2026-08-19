@@ -1,6 +1,6 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Exceptions;
+namespace Youtrust\ZddMessageBundle\Exceptions;
 
 class InvalidTypeException extends \Exception
 {
