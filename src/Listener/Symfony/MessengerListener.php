@@ -1,12 +1,12 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Listener\Symfony;
+namespace Youtrust\ZddMessageBundle\Listener\Symfony;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
 use Symfony\Component\Messenger\Message\RedispatchMessage;
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Youtrust\ZddMessageBundle\Config\ZddMessageConfigInterface;
 
 final class MessengerListener implements EventSubscriberInterface
 {

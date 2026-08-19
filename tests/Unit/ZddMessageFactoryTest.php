@@ -1,20 +1,20 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Tests\Unit;
+namespace Youtrust\ZddMessageBundle\Tests\Unit;
 
 use App\WithoutValue\WithoutValue;
 use App\WithoutValue\WithoutValueConfig;
 use PHPUnit\Framework\TestCase;
-use Yousign\ZddMessageBundle\Exceptions\MissingValueForTypeException;
-use Yousign\ZddMessageBundle\Factory\ZddMessageFactory;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyCustomMessage;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithInheritedReadonlyProperty;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status;
+use Youtrust\ZddMessageBundle\Exceptions\MissingValueForTypeException;
+use Youtrust\ZddMessageBundle\Factory\ZddMessageFactory;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyCustomMessage;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithInheritedReadonlyProperty;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status;
 
 class ZddMessageFactoryTest extends TestCase
 {
@@ -127,8 +127,8 @@ class ZddMessageFactoryTest extends TestCase
 
 namespace App\WithoutValue;
 
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
+use Youtrust\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
 
 final class WithoutValue
 {

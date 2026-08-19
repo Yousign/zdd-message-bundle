@@ -1,16 +1,16 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Tests\Unit;
+namespace Youtrust\ZddMessageBundle\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
-use Yousign\ZddMessageBundle\Assert\ZddMessageAsserter;
-use Yousign\ZddMessageBundle\Factory\Property;
-use Yousign\ZddMessageBundle\Factory\PropertyList;
-use Yousign\ZddMessageBundle\Serializer\UnableToDeserializeException;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithWrongPropertyType;
+use Youtrust\ZddMessageBundle\Assert\ZddMessageAsserter;
+use Youtrust\ZddMessageBundle\Factory\Property;
+use Youtrust\ZddMessageBundle\Factory\PropertyList;
+use Youtrust\ZddMessageBundle\Serializer\UnableToDeserializeException;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithWrongPropertyType;
 
 class ZddMessageAsserterTest extends TestCase
 {
@@ -77,7 +77,7 @@ class ZddMessageAsserterTest extends TestCase
         self::assertTrue($propertyList->has('content'));
         self::assertTrue($propertyList->has('number'));
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('⚠️ The properties "number" in class "Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage" seems to have been removed');
+        $this->expectExceptionMessage('⚠️ The properties "number" in class "Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage" seems to have been removed');
 
         $sut = $this->getSut();
         $sut->assert(DummyMessage::class, $serializedMessage, $propertyList);
@@ -136,7 +136,7 @@ class ZddMessageAsserterTest extends TestCase
         JSON
         );
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('Error for property "content" in class "Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage", the type mismatch between the old and the new version of class. Please verify your integration.');
+        $this->expectExceptionMessage('Error for property "content" in class "Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage", the type mismatch between the old and the new version of class. Please verify your integration.');
 
         $sut = $this->getSut();
         $sut->assert(DummyMessage::class, $serializedMessage, $propertyList);

@@ -1,9 +1,9 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Tests\Unit;
+namespace Youtrust\ZddMessageBundle\Tests\Unit;
 
 use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
-use Yousign\ZddMessageBundle\Serializer\ZddMessageMessengerSerializer;
+use Youtrust\ZddMessageBundle\Serializer\ZddMessageMessengerSerializer;
 
 trait SerializerTrait
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Tests\Func;
+namespace Youtrust\ZddMessageBundle\Tests\Func;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
+use Youtrust\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
 
 class GenerateZddMessageCommandTest extends KernelTestCase
 {
@@ -19,9 +19,9 @@ class GenerateZddMessageCommandTest extends KernelTestCase
         parent::setUp();
 
         $kernel = self::bootKernel();
-        $this->command = new CommandTester((new Application($kernel))->find('yousign:zdd-message:generate'));
+        $this->command = new CommandTester((new Application($kernel))->find('youtrust:zdd-message:generate'));
         $customBasePathFile = $kernel->getContainer()->getParameter('custom_path_file');
-        $this->serializedMessagesDir = $customBasePathFile.'/Yousign/ZddMessageBundle/Tests/Fixtures/App/Messages';
+        $this->serializedMessagesDir = $customBasePathFile.'/Youtrust/ZddMessageBundle/Tests/Fixtures/App/Messages';
     }
 
     protected function tearDown(): void
@@ -42,16 +42,16 @@ class GenerateZddMessageCommandTest extends KernelTestCase
         $this->assertSerializedFilesExist($this->serializedMessagesDir);
 
         $expectedResult = <<<EOF
-         --- --------------------------------------------------------------------------------------------- 
-          #   Message                                                                                      
-         --- --------------------------------------------------------------------------------------------- 
-          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage                            
-          2   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty  
-          3   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor      
-          4   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes         
-          5   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Other\DummyMessage                      
-          6   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyCustomMessage                      
-         --- ---------------------------------------------------------------------------------------------  
+         --- ---------------------------------------------------------------------------------------------- 
+          #   Message                                                                                       
+         --- ---------------------------------------------------------------------------------------------- 
+          1   Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage                            
+          2   Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty  
+          3   Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor      
+          4   Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes         
+          5   Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Other\DummyMessage                      
+          6   Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyCustomMessage                      
+         --- ----------------------------------------------------------------------------------------------  
         EOF;
 
         $this->assertSame(trim($expectedResult), trim($this->command->getDisplay()));

@@ -1,6 +1,6 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Tests\Func;
+namespace Youtrust\ZddMessageBundle\Tests\Func;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -9,10 +9,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
-use Yousign\ZddMessageBundle\Serializer\ZddMessageMessengerSerializer;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
+use Youtrust\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Youtrust\ZddMessageBundle\Serializer\ZddMessageMessengerSerializer;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
 
 class ValidateZddMessageCommandTest extends KernelTestCase
 {
@@ -23,9 +23,9 @@ class ValidateZddMessageCommandTest extends KernelTestCase
     {
         parent::setUp();
         $kernel = self::bootKernel();
-        $this->command = new CommandTester((new Application(self::$kernel))->find('yousign:zdd-message:validate'));
+        $this->command = new CommandTester((new Application(self::$kernel))->find('youtrust:zdd-message:validate'));
         $customBasePathFile = $kernel->getContainer()->getParameter('custom_path_file');
-        $this->serializedMessagesDir = $customBasePathFile.'/Yousign/ZddMessageBundle/Tests/Fixtures/App/Messages';
+        $this->serializedMessagesDir = $customBasePathFile.'/Youtrust/ZddMessageBundle/Tests/Fixtures/App/Messages';
 
         MessageConfig::$messagesToAssert = [
             DummyMessage::class,
@@ -56,11 +56,11 @@ class ValidateZddMessageCommandTest extends KernelTestCase
         $this->command->assertCommandIsSuccessful();
 
         $expectedResult = <<<EOF
-         --- ------------------------------------------------------------------- ---------------- 
-          #   Message                                                             ZDD Compliant?  
-         --- ------------------------------------------------------------------- ---------------- 
-          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   Yes ✅          
-         --- ------------------------------------------------------------------- ----------------
+         --- -------------------------------------------------------------------- ---------------- 
+          #   Message                                                              ZDD Compliant?  
+         --- -------------------------------------------------------------------- ---------------- 
+          1   Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   Yes ✅          
+         --- -------------------------------------------------------------------- ----------------
         EOF;
 
         $this->assertSame(trim($expectedResult), trim($this->command->getDisplay()));
@@ -75,11 +75,11 @@ class ValidateZddMessageCommandTest extends KernelTestCase
         $this->command->assertCommandIsSuccessful();
 
         $expectedResult = <<<EOF
-         --- ------------------------------------------------------------------- ---------------- 
-          #   Message                                                             ZDD Compliant?  
-         --- ------------------------------------------------------------------- ---------------- 
-          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   Yes ✅          
-         --- ------------------------------------------------------------------- ----------------
+         --- -------------------------------------------------------------------- ---------------- 
+          #   Message                                                              ZDD Compliant?  
+         --- -------------------------------------------------------------------- ---------------- 
+          1   Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   Yes ✅          
+         --- -------------------------------------------------------------------- ----------------
         EOF;
 
         $this->assertSame(trim($expectedResult), trim($this->command->getDisplay()));
@@ -109,11 +109,11 @@ class ValidateZddMessageCommandTest extends KernelTestCase
 
         self::assertEquals(Command::FAILURE, $this->command->getStatusCode());
         $expectedResult = <<<EOF
-         --- ------------------------------------------------------------------- ---------------- 
-          #   Message                                                             ZDD Compliant?  
-         --- ------------------------------------------------------------------- ---------------- 
-          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   No ❌           
-         --- ------------------------------------------------------------------- ---------------- 
+         --- -------------------------------------------------------------------- ---------------- 
+          #   Message                                                              ZDD Compliant?  
+         --- -------------------------------------------------------------------- ---------------- 
+          1   Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   No ❌           
+         --- -------------------------------------------------------------------- ---------------- 
         
          ! [NOTE] 1 error(s) triggered.
         EOF;
@@ -145,19 +145,19 @@ class ValidateZddMessageCommandTest extends KernelTestCase
 
         self::assertEquals(Command::FAILURE, $this->command->getStatusCode());
         $expectedResult = <<<EOF
-         --- ------------------------------------------------------------------- ---------------- 
-          #   Message                                                             ZDD Compliant?  
-         --- ------------------------------------------------------------------- ---------------- 
-          1   Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   No ❌           
-         --- ------------------------------------------------------------------- ---------------- 
+         --- -------------------------------------------------------------------- ---------------- 
+          #   Message                                                              ZDD Compliant?  
+         --- -------------------------------------------------------------------- ---------------- 
+          1   Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   No ❌           
+         --- -------------------------------------------------------------------- ---------------- 
         
          ! [NOTE] 1 error(s) triggered.
 
-         ------------------------------------------------------------------- -------------- 
-          Message                                                             Error         
-         ------------------------------------------------------------------- -------------- 
-          Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   Syntax error  
-         ------------------------------------------------------------------- --------------
+         -------------------------------------------------------------------- -------------- 
+          Message                                                              Error         
+         -------------------------------------------------------------------- -------------- 
+          Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage   Syntax error  
+         -------------------------------------------------------------------- --------------
         EOF;
 
         $this->assertSame(
@@ -170,7 +170,7 @@ class ValidateZddMessageCommandTest extends KernelTestCase
     {
         return
             <<<TXT
-            O:65:"Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage":1:{s:74:" Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage content";s:11:"Hello world";}
+            O:66:"Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage":1:{s:75:" Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage content";s:11:"Hello world";}
             TXT;
     }
 

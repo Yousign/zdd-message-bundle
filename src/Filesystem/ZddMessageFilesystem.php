@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yousign\ZddMessageBundle\Filesystem;
+namespace Youtrust\ZddMessageBundle\Filesystem;
 
-use Yousign\ZddMessageBundle\Factory\PropertyList;
-use Yousign\ZddMessageBundle\Factory\ZddMessage;
+use Youtrust\ZddMessageBundle\Factory\PropertyList;
+use Youtrust\ZddMessageBundle\Factory\ZddMessage;
 
 /**
  * @internal

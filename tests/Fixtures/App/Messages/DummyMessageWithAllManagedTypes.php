@@ -1,9 +1,9 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages;
+namespace Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages;
 
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status;
 
 final class DummyMessageWithAllManagedTypes
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yousign\ZddMessageBundle\Serializer;
+namespace Youtrust\ZddMessageBundle\Serializer;
 
 interface SerializerInterface
 {

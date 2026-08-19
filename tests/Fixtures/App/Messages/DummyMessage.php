@@ -1,6 +1,6 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages;
+namespace Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages;
 
 final class DummyMessage
 {

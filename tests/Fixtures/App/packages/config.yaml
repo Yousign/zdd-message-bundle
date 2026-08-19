@@ -7,7 +7,7 @@ services:
     autoconfigure: true
     public: true
 
-  Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig: ~
+  Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig: ~
 
 framework:
   secret: ThisIsSecret
@@ -17,7 +17,7 @@ framework:
           sync: "in-memory://"
 
 zdd_message:
-  message_config_service: Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig
+  message_config_service: Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Config\MessageConfig
   serialized_messages_dir: '%custom_path_file%'
   log_untracked_messages:
     messenger:

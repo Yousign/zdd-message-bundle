@@ -1,6 +1,6 @@
 <?php
 
-namespace Yousign\ZddMessageBundle;
+namespace Youtrust\ZddMessageBundle;
 
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -9,13 +9,13 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-use Yousign\ZddMessageBundle\Command\GenerateZddMessageCommand;
-use Yousign\ZddMessageBundle\Command\ListZddMessageCommand;
-use Yousign\ZddMessageBundle\Command\ValidateZddMessageCommand;
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
-use Yousign\ZddMessageBundle\Listener\Symfony\MessengerListener;
-use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
-use Yousign\ZddMessageBundle\Serializer\ZddMessageMessengerSerializer;
+use Youtrust\ZddMessageBundle\Command\GenerateZddMessageCommand;
+use Youtrust\ZddMessageBundle\Command\ListZddMessageCommand;
+use Youtrust\ZddMessageBundle\Command\ValidateZddMessageCommand;
+use Youtrust\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Youtrust\ZddMessageBundle\Listener\Symfony\MessengerListener;
+use Youtrust\ZddMessageBundle\Serializer\SerializerInterface;
+use Youtrust\ZddMessageBundle\Serializer\ZddMessageMessengerSerializer;
 
 final class ZddMessageBundle extends AbstractBundle
 {

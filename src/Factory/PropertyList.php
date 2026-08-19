@@ -1,6 +1,6 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Factory;
+namespace Youtrust\ZddMessageBundle\Factory;
 
 /**
  * @internal

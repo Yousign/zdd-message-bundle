@@ -1,11 +1,11 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Assert;
+namespace Youtrust\ZddMessageBundle\Assert;
 
-use Yousign\ZddMessageBundle\Factory\Property;
-use Yousign\ZddMessageBundle\Factory\PropertyList;
-use Yousign\ZddMessageBundle\Serializer\SerializerInterface;
-use Yousign\ZddMessageBundle\Serializer\UnableToDeserializeException;
+use Youtrust\ZddMessageBundle\Factory\Property;
+use Youtrust\ZddMessageBundle\Factory\PropertyList;
+use Youtrust\ZddMessageBundle\Serializer\SerializerInterface;
+use Youtrust\ZddMessageBundle\Serializer\UnableToDeserializeException;
 
 /**
  * @internal

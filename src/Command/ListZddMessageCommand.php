@@ -1,15 +1,15 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Command;
+namespace Youtrust\ZddMessageBundle\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Youtrust\ZddMessageBundle\Config\ZddMessageConfigInterface;
 
-#[AsCommand(name: 'yousign:zdd-message:debug', description: 'List of managed messages to validate.')]
+#[AsCommand(name: 'youtrust:zdd-message:debug', aliases: ['yousign:zdd-message:debug'], description: 'List of managed messages to validate.')]
 final class ListZddMessageCommand extends Command
 {
     public function __construct(

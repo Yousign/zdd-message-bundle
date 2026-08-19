@@ -1,17 +1,17 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Config;
+namespace Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Config;
 
-use Yousign\ZddMessageBundle\Config\CustomMessageGeneratorInterface;
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyCustomMessage;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status;
-use Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Other;
+use Youtrust\ZddMessageBundle\Config\CustomMessageGeneratorInterface;
+use Youtrust\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyCustomMessage;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessage;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithAllManagedTypes;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithNullableNumberProperty;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\DummyMessageWithPrivateConstructor;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Locale;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status;
+use Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Other;
 
 class MessageConfig implements ZddMessageConfigInterface, CustomMessageGeneratorInterface
 {
@@ -35,7 +35,7 @@ class MessageConfig implements ZddMessageConfigInterface, CustomMessageGenerator
     {
         return match ($type) {
             Locale::class => new Locale('fr'),
-            'Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status' => Status::DRAFT,
+            'Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Input\Status' => Status::DRAFT,
             DummyMessageWithNullableNumberProperty::class => new DummyMessageWithNullableNumberProperty('content'),
             default => null,
         };

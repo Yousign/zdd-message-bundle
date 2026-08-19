@@ -1,8 +1,8 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Exceptions;
+namespace Youtrust\ZddMessageBundle\Exceptions;
 
-use Yousign\ZddMessageBundle\Config\ZddMessageConfigInterface;
+use Youtrust\ZddMessageBundle\Config\ZddMessageConfigInterface;
 
 class MissingValueForTypeException extends \Exception
 {

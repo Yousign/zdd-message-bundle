@@ -1,6 +1,6 @@
 <?php
 
-namespace Yousign\ZddMessageBundle\Tests\Fixtures\App\Messages\Input;
+namespace Youtrust\ZddMessageBundle\Tests\Fixtures\App\Messages\Input;
 
 enum Status: string
 {
