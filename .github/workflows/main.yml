@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['8.4', '8.5']
+        php-versions: ['8.3', '8.4', '8.5']
         mode: ['high-deps', 'low-deps']
       fail-fast: false
     name: PHP ${{ matrix.php-versions }} tests with ${{ matrix.mode }}

@@ -30,7 +30,7 @@ any kind, security fixes included.
 
 ## Requirements
 
-- PHP 8.4 and above
+- PHP 8.3 and above
 - Symfony 7.4 or 8
 
 ## Getting started

@@ -7,7 +7,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": "^8.4",
+        "php": "^8.3",
         "symfony/console": "^7.4|^8.0"
     },
     "require-dev": {
