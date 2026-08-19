@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Youtrust\ZddMessageBundle\Config\ZddMessageConfigInterface;
 
-#[AsCommand(name: 'youtrust:zdd-message:debug', aliases: ['yousign:zdd-message:debug'], description: 'List of managed messages to validate.')]
+#[AsCommand(name: 'youtrust:zdd-message:debug', description: 'List of managed messages to validate.')]
 final class ListZddMessageCommand extends Command
 {
     public function __construct(

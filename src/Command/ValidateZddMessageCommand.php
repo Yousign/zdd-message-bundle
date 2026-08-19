@@ -13,7 +13,7 @@ use Youtrust\ZddMessageBundle\Factory\ZddMessageFactory;
 use Youtrust\ZddMessageBundle\Filesystem\ZddMessageFilesystem;
 use Youtrust\ZddMessageBundle\Serializer\SerializerInterface;
 
-#[AsCommand(name: 'youtrust:zdd-message:validate', aliases: ['yousign:zdd-message:validate'], description: 'Validate the serialized version of managed messages with the current version.')]
+#[AsCommand(name: 'youtrust:zdd-message:validate', description: 'Validate the serialized version of managed messages with the current version.')]
 final class ValidateZddMessageCommand extends Command
 {
     private ZddMessageFactory $zddMessageFactory;

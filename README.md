@@ -21,9 +21,9 @@ code, three spots live in configuration and are easy to miss:
 - the serializer service in `messenger.yaml`, if you use `ZddMessageMessengerSerializer`
 - your own implementations of `ZddMessageConfigInterface` and `CustomMessageGeneratorInterface`
 
-The console commands are renamed to `youtrust:zdd-message:*`. The `yousign:zdd-message:*` names still work
-as aliases so your CI pipelines keep running, but they are deprecated and **will be removed in v5.0.0** —
-update them at your convenience.
+The console commands are renamed to `youtrust:zdd-message:*`, with **no alias kept for the old names**.
+They are typically invoked from CI pipelines rather than from PHP, so unlike the namespace change this one
+fails at run time rather than at autoload time — update your pipelines as part of the upgrade.
 
 `yousign/zdd-message-bundle` is abandoned and no longer maintained. It will receive no further release of
 any kind, security fixes included.
@@ -168,8 +168,6 @@ $ bin/console youtrust:zdd-message:generate # Generate serialized messages in fi
 $ bin/console youtrust:zdd-message:validate # Assert that the messages are compliant by deserializing them from files and call the properties.
 $ bin/console youtrust:zdd-message:debug # Output all tracked messages.
 ```
-
-The legacy `yousign:zdd-message:*` names remain available as deprecated aliases until v5.0.0.
 
 💡 You should run `bin/console youtrust:zdd-message:generate` with the production version code and `bin/console youtrust:zdd-message:validate` with the version code you want to merge.
 

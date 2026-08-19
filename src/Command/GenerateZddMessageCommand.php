@@ -12,7 +12,7 @@ use Youtrust\ZddMessageBundle\Factory\ZddMessageFactory;
 use Youtrust\ZddMessageBundle\Filesystem\ZddMessageFilesystem;
 use Youtrust\ZddMessageBundle\Serializer\SerializerInterface;
 
-#[AsCommand(name: 'youtrust:zdd-message:generate', aliases: ['yousign:zdd-message:generate'], description: 'Generate serialized version of managed messages to validate them afterwards.')]
+#[AsCommand(name: 'youtrust:zdd-message:generate', description: 'Generate serialized version of managed messages to validate them afterwards.')]
 final class GenerateZddMessageCommand extends Command
 {
     private ZddMessageFactory $zddMessageFactory;
